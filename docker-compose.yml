@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  trip-planner:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - trip-data:/app/data
+    environment:
+      - ADMIN_PASSWORD=kabi2025
+      - DB_PATH=/app/data/trips.db
+      - PORT=3000
+    restart: unless-stopped
+
+volumes:
+  trip-data:
