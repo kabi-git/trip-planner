@@ -656,17 +656,39 @@
   .confirm-btn:hover { opacity: 0.85; }
 
   .confirmed-static {
-    width: 100%;
-    max-width: 480px;
-    display: block;
-    margin: 0 auto;
-    text-align: center;
     font-family: var(--font-head);
     font-size: 18px;
     letter-spacing: 2px;
     color: var(--muted);
-    padding: 13px 20px;
+    padding: 13px 0;
+    flex: 1;
+    text-align: center;
   }
+
+  .confirmed-footer-row {
+    display: flex;
+    align-items: center;
+    max-width: 480px;
+    margin: 0 auto;
+    gap: 10px;
+  }
+
+  .unconfirm-btn {
+    flex-shrink: 0;
+    background: none;
+    border: 1px solid var(--border2);
+    color: var(--muted2);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: border-color 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+
+  .unconfirm-btn:hover { border-color: var(--red); color: var(--red); }
 
   /* MODALS */
   .modal-backdrop {
@@ -1043,7 +1065,10 @@ function renderDestView() {
   // Confirm footer
   html += `<div class="confirm-footer">`;
   if (d.confirmed) {
-    html += `<div class="confirmed-static">✓ THIS IS THE ONE</div>`;
+    html += `<div class="confirmed-footer-row">
+      <div class="confirmed-static">✓ THIS IS THE ONE</div>
+      <button class="unconfirm-btn" onclick="unconfirmTrip()" title="Undo confirmation">↩ UNDO</button>
+    </div>`;
   } else {
     html += `<button class="confirm-btn" onclick="confirmTrip()">WE'RE GOING TO ${esc(d.name.toUpperCase())} 🏍️❤️</button>`;
   }
@@ -1185,7 +1210,33 @@ async function goHome() {
   renderHome();
 }
 
-// ===================== CONFIRM TRIP =====================
+// ===================== CONFIRM / UNCONFIRM TRIP =====================
+async function unconfirmTrip() {
+  if (!token) {
+    showPasswordModal(async () => {
+      editMode = true;
+      document.body.classList.add('edit-mode');
+      updateEditBadge();
+      await doUnconfirmTrip();
+    });
+    return;
+  }
+  await doUnconfirmTrip();
+}
+
+async function doUnconfirmTrip() {
+  if (!confirm('Remove this as the confirmed destination?')) return;
+  try {
+    await api('PUT', '/api/destinations/' + currentDest.id, { confirmed: false });
+    currentDest = await api('GET', '/api/destinations/' + currentDest.id);
+    toast('Confirmation removed');
+    renderDestView();
+  } catch (e) {
+    toast(e.message, 'error');
+  }
+}
+
+
 async function confirmTrip() {
   if (!token) {
     showPasswordModal(async () => {
