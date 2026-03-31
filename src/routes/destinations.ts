@@ -2,24 +2,23 @@ import { Hono } from 'hono'
 import { db } from '../db'
 import { requireAuth } from '../middleware/auth'
 
-type Row = Record<string, unknown>
+type Row = Record<string, any>
 
 function parseDest(d: Row) {
   return {
     ...d,
-    tags: JSON.parse(d.tags as string || '[]'),
+    tags: JSON.parse(d.tags || '[]'),
     confirmed: d.confirmed === 1,
   }
 }
 
 const destinations = new Hono()
 
-destinations.get('/', (c) => {
+destinations.get('/', async (c) => {
   const q    = c.req.query('q')?.toLowerCase()
   const sort = c.req.query('sort') // 'name' | 'distance' | 'duration'
 
   let query = 'SELECT * FROM destinations'
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const params: any[] = []
 
   if (q) {
@@ -34,23 +33,24 @@ destinations.get('/', (c) => {
     default:         query += ' ORDER BY id ASC'
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const rows = db.prepare(query).all(...(params as any[])) as Row[]
+  const rows = await db.all(query, params)
   return c.json(rows.map(parseDest))
 })
 
-destinations.get('/:id', (c) => {
-  const d = db.prepare('SELECT * FROM destinations WHERE id = ?').get(c.req.param('id')) as Row | null
+destinations.get('/:id', async (c) => {
+  const d = await db.get('SELECT * FROM destinations WHERE id = ?', [c.req.param('id')])
   if (!d) return c.json({ error: 'Not found' }, 404)
 
-  const sections = db.prepare(
-    'SELECT * FROM sections WHERE destination_id = ? ORDER BY sort_order ASC, id ASC'
-  ).all(d.id as number) as Row[]
+  const sections = await db.all(
+    'SELECT * FROM sections WHERE destination_id = ? ORDER BY sort_order ASC, id ASC',
+    [d.id]
+  )
 
   for (const s of sections) {
-    s.items = db.prepare(
-      'SELECT * FROM items WHERE section_id = ? ORDER BY sort_order ASC, id ASC'
-    ).all(s.id as number)
+    s.items = await db.all(
+      'SELECT * FROM items WHERE section_id = ? ORDER BY sort_order ASC, id ASC',
+      [s.id]
+    )
   }
 
   return c.json({ ...parseDest(d), sections })
@@ -58,27 +58,28 @@ destinations.get('/:id', (c) => {
 
 destinations.post('/', requireAuth, async (c) => {
   const { name, subtitle, emoji, distance_km, duration_hrs, tags, notes } = await c.req.json()
-  const { lastInsertRowid } = db.prepare(
-    'INSERT INTO destinations (name, subtitle, emoji, distance_km, duration_hrs, tags, notes) VALUES (?, ?, ?, ?, ?, ?, ?)'
-  ).run(name, subtitle, emoji, distance_km, duration_hrs, JSON.stringify(tags ?? []), notes ?? null)
-  const d = db.prepare('SELECT * FROM destinations WHERE id = ?').get(lastInsertRowid) as Row
-  return c.json(parseDest(d), 201)
+  const { lastInsertRowid } = await db.run(
+    'INSERT INTO destinations (name, subtitle, emoji, distance_km, duration_hrs, tags, notes) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    [name, subtitle, emoji, distance_km, duration_hrs, JSON.stringify(tags ?? []), notes ?? null]
+  )
+  const d = await db.get('SELECT * FROM destinations WHERE id = ?', [lastInsertRowid])
+  return c.json(parseDest(d!), 201)
 })
 
 destinations.put('/:id', requireAuth, async (c) => {
   const id = c.req.param('id')
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const existing = db.prepare('SELECT * FROM destinations WHERE id = ?').get(id) as any | null
+  const existing = await db.get('SELECT * FROM destinations WHERE id = ?', [id])
   if (!existing) return c.json({ error: 'Not found' }, 404)
 
   const { name, subtitle, emoji, distance_km, duration_hrs, tags, confirmed, notes } = await c.req.json()
   const isConfirm = confirmed === true || confirmed === 1
 
-  db.transaction(() => {
-    if (isConfirm) db.prepare('UPDATE destinations SET confirmed = 0').run()
-    db.prepare(
-      'UPDATE destinations SET name=?, subtitle=?, emoji=?, distance_km=?, duration_hrs=?, tags=?, confirmed=?, notes=? WHERE id=?'
-    ).run(
+  if (isConfirm) {
+    await db.run('UPDATE destinations SET confirmed = 0', [])
+  }
+  await db.run(
+    'UPDATE destinations SET name=?, subtitle=?, emoji=?, distance_km=?, duration_hrs=?, tags=?, confirmed=?, notes=? WHERE id=?',
+    [
       name         ?? existing.name,
       subtitle     ?? existing.subtitle,
       emoji        ?? existing.emoji,
@@ -87,84 +88,80 @@ destinations.put('/:id', requireAuth, async (c) => {
       JSON.stringify(tags ?? JSON.parse(existing.tags || '[]')),
       isConfirm ? 1 : (confirmed === false || confirmed === 0) ? 0 : existing.confirmed,
       notes !== undefined ? notes : existing.notes,
-      id
-    )
-  })()
+      id,
+    ]
+  )
 
-  const d = db.prepare('SELECT * FROM destinations WHERE id = ?').get(id) as Row
-  return c.json(parseDest(d))
+  const d = await db.get('SELECT * FROM destinations WHERE id = ?', [id])
+  return c.json(parseDest(d!))
 })
 
-destinations.delete('/:id', requireAuth, (c) => {
-  const { changes } = db.prepare('DELETE FROM destinations WHERE id = ?').run(c.req.param('id'))
+destinations.delete('/:id', requireAuth, async (c) => {
+  const { changes } = await db.run('DELETE FROM destinations WHERE id = ?', [c.req.param('id')])
   if (changes === 0) return c.json({ error: 'Not found' }, 404)
   return c.json({ ok: true })
 })
 
 // Clone a destination with all its sections and items
-destinations.post('/:id/clone', requireAuth, (c) => {
+destinations.post('/:id/clone', requireAuth, async (c) => {
   const id = c.req.param('id')
-  const d  = db.prepare('SELECT * FROM destinations WHERE id = ?').get(id) as Row | null
+  const d  = await db.get('SELECT * FROM destinations WHERE id = ?', [id])
   if (!d) return c.json({ error: 'Not found' }, 404)
 
-  let newDestId: number | bigint = 0
-  db.transaction(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const r = d as any
-    const { lastInsertRowid } = db.prepare(
-      'INSERT INTO destinations (name, subtitle, emoji, distance_km, duration_hrs, tags, notes) VALUES (?, ?, ?, ?, ?, ?, ?)'
-    ).run(`${r.name} (Copy)`, r.subtitle, r.emoji, r.distance_km, r.duration_hrs, r.tags, r.notes ?? null)
-    newDestId = lastInsertRowid
+  const { lastInsertRowid: newDestId } = await db.run(
+    'INSERT INTO destinations (name, subtitle, emoji, distance_km, duration_hrs, tags, notes) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    [`${d.name} (Copy)`, d.subtitle, d.emoji, d.distance_km, d.duration_hrs, d.tags, d.notes ?? null]
+  )
 
-    const sections = db.prepare(
-      'SELECT * FROM sections WHERE destination_id = ? ORDER BY sort_order ASC, id ASC'
-    ).all(id) as Row[]
+  const secs = await db.all(
+    'SELECT * FROM sections WHERE destination_id = ? ORDER BY sort_order ASC, id ASC',
+    [id]
+  )
 
-    for (const s of sections) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const sa = s as any
-      const { lastInsertRowid: newSecId } = db.prepare(
-        'INSERT INTO sections (destination_id, type, title, icon, sort_order) VALUES (?, ?, ?, ?, ?)'
-      ).run(newDestId, sa.type, sa.title, sa.icon, sa.sort_order)
-
-      const items = db.prepare(
-        'SELECT * FROM items WHERE section_id = ? ORDER BY sort_order ASC, id ASC'
-      ).all(sa.id as number) as Row[]
-
-      for (const item of items) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const ia = item as any
-        db.prepare(
-          'INSERT INTO items (section_id, item_type, text, note, tag, tag_color, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)'
-        ).run(newSecId, ia.item_type, ia.text, ia.note, ia.tag, ia.tag_color, ia.sort_order)
-      }
+  for (const s of secs) {
+    const { lastInsertRowid: newSecId } = await db.run(
+      'INSERT INTO sections (destination_id, type, title, icon, sort_order) VALUES (?, ?, ?, ?, ?)',
+      [newDestId, s.type, s.title, s.icon, s.sort_order]
+    )
+    const its = await db.all(
+      'SELECT * FROM items WHERE section_id = ? ORDER BY sort_order ASC, id ASC',
+      [s.id]
+    )
+    if (its.length > 0) {
+      await db.batch(its.map(item => ({
+        sql: 'INSERT INTO items (section_id, item_type, text, note, tag, tag_color, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        args: [newSecId, item.item_type, item.text, item.note, item.tag, item.tag_color, item.sort_order],
+      })))
     }
-  })()
+  }
 
-  const newDest = db.prepare('SELECT * FROM destinations WHERE id = ?').get(newDestId) as Row
-  return c.json(parseDest(newDest), 201)
+  const newDest = await db.get('SELECT * FROM destinations WHERE id = ?', [newDestId])
+  return c.json(parseDest(newDest!), 201)
 })
 
 // Reorder sections: POST /api/destinations/:id/sections/reorder  [{id, sort_order}]
 destinations.post('/:id/sections/reorder', requireAuth, async (c) => {
   const payload = await c.req.json<Array<{ id: number; sort_order: number }>>()
-  const stmt = db.prepare('UPDATE sections SET sort_order = ? WHERE id = ?')
-  db.transaction(() => { for (const { id, sort_order } of payload) stmt.run(sort_order, id) })()
+  await db.batch(payload.map(({ id, sort_order }) => ({
+    sql: 'UPDATE sections SET sort_order = ? WHERE id = ?',
+    args: [sort_order, id],
+  })))
   return c.json({ ok: true })
 })
 
 // Nested: POST /api/destinations/:id/sections
 destinations.post('/:id/sections', requireAuth, async (c) => {
   const destId = c.req.param('id')
-  if (!db.prepare('SELECT id FROM destinations WHERE id = ?').get(destId)) {
+  if (!(await db.get('SELECT id FROM destinations WHERE id = ?', [destId]))) {
     return c.json({ error: 'Destination not found' }, 404)
   }
   const { type, title, icon, sort_order } = await c.req.json()
-  const { lastInsertRowid } = db.prepare(
-    'INSERT INTO sections (destination_id, type, title, icon, sort_order) VALUES (?, ?, ?, ?, ?)'
-  ).run(destId, type ?? 'custom', title, icon, sort_order ?? 0)
+  const { lastInsertRowid } = await db.run(
+    'INSERT INTO sections (destination_id, type, title, icon, sort_order) VALUES (?, ?, ?, ?, ?)',
+    [destId, type ?? 'custom', title, icon, sort_order ?? 0]
+  )
 
-  const section = db.prepare('SELECT * FROM sections WHERE id = ?').get(lastInsertRowid) as Row
+  const section: Row = await db.get('SELECT * FROM sections WHERE id = ?', [lastInsertRowid]) ?? {}
   section.items = []
   return c.json(section, 201)
 })

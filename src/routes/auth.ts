@@ -15,24 +15,24 @@ auth.post('/login', async (c) => {
   if (!role) return c.json({ error: 'Wrong password' }, 401)
 
   const token = crypto.randomUUID()
-  db.prepare('INSERT INTO sessions (token, role) VALUES (?, ?)').run(token, role)
+  await db.run('INSERT INTO sessions (token, role) VALUES (?, ?)', [token, role])
   return c.json({ token, role })
 })
 
-auth.post('/logout', (c) => {
+auth.post('/logout', async (c) => {
   const header = c.req.header('Authorization')
   if (header?.startsWith('Bearer ')) {
-    db.prepare('DELETE FROM sessions WHERE token = ?').run(header.slice(7))
+    await db.run('DELETE FROM sessions WHERE token = ?', [header.slice(7)])
   }
   return c.json({ ok: true })
 })
 
-auth.get('/check', (c) => {
+auth.get('/check', async (c) => {
   const header = c.req.header('Authorization')
   if (!header?.startsWith('Bearer ')) return c.json({ authenticated: false, role: null })
   const token = header.slice(7)
-  const valid = isValidSession(token)
-  const role  = valid ? getSessionRole(token) : null
+  const valid = await isValidSession(token)
+  const role  = valid ? await getSessionRole(token) : null
   return c.json({ authenticated: valid, role })
 })
 

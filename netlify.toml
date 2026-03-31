@@ -1,0 +1,13 @@
+[build]
+  publish = "public"
+  command = "echo 'no build step'"
+
+[functions]
+  directory    = "netlify/functions"
+  node_bundler = "esbuild"
+
+[dev]
+  command     = "bun --hot src/index.ts"
+  port        = 3000
+  targetPort  = 3000
+  autoLaunch  = false
