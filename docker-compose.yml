@@ -1,16 +1,41 @@
 version: '3.8'
+
 services:
   trip-planner:
     build: .
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     volumes:
       - trip-data:/app/data
     environment:
       - ADMIN_PASSWORD=kabi2025
+      - DEVA_PASSWORD=deva2025
       - DB_PATH=/app/data/trips.db
       - PORT=3000
     restart: unless-stopped
+    networks:
+      - web
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    restart: unless-stopped
+    networks:
+      - web
+    depends_on:
+      - trip-planner
+
+networks:
+  web:
 
 volumes:
   trip-data:
+  caddy-data:
+  caddy-config:

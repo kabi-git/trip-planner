@@ -48,4 +48,21 @@ db.exec(`
     key   TEXT PRIMARY KEY,
     value TEXT NOT NULL
   );
+
+  CREATE TABLE IF NOT EXISTS sessions (
+    token      TEXT PRIMARY KEY,
+    role       TEXT NOT NULL DEFAULT 'admin',
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS checklist_state (
+    device_id  TEXT NOT NULL,
+    item_id    INTEGER NOT NULL,
+    checked    INTEGER NOT NULL DEFAULT 0,
+    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+    PRIMARY KEY (device_id, item_id)
+  );
 `)
+
+// Migrations: add columns that may not exist in older databases
+try { db.exec(`ALTER TABLE destinations ADD COLUMN notes TEXT`) } catch {}

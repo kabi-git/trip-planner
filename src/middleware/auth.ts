@@ -1,10 +1,29 @@
 import { createMiddleware } from 'hono/factory'
+import { db } from '../db'
 
-export const sessions = new Map<string, true>()
+export function isValidSession(token: string): boolean {
+  return !!(db.prepare('SELECT token FROM sessions WHERE token = ?').get(token))
+}
 
+export function getSessionRole(token: string): string | null {
+  const row = db.prepare('SELECT role FROM sessions WHERE token = ?').get(token) as { role: string } | null
+  return row?.role ?? null
+}
+
+// Admin-only: can create/edit/delete content
 export const requireAuth = createMiddleware(async (c, next) => {
   const header = c.req.header('Authorization')
   if (!header?.startsWith('Bearer ')) return c.json({ error: 'Unauthorized' }, 401)
-  if (!sessions.has(header.slice(7)))  return c.json({ error: 'Unauthorized' }, 401)
+  const token = header.slice(7)
+  if (!isValidSession(token)) return c.json({ error: 'Unauthorized' }, 401)
+  if (getSessionRole(token) !== 'admin') return c.json({ error: 'Forbidden' }, 403)
+  await next()
+})
+
+// Any authenticated user (admin or viewer)
+export const requireAnyAuth = createMiddleware(async (c, next) => {
+  const header = c.req.header('Authorization')
+  if (!header?.startsWith('Bearer ')) return c.json({ error: 'Unauthorized' }, 401)
+  if (!isValidSession(header.slice(7))) return c.json({ error: 'Unauthorized' }, 401)
   await next()
 })

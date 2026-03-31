@@ -11,10 +11,11 @@ sections.put('/:id', requireAuth, async (c) => {
   const existing = db.prepare('SELECT * FROM sections WHERE id = ?').get(id) as Row | null
   if (!existing) return c.json({ error: 'Not found' }, 404)
 
-  const { title, icon } = await c.req.json()
-  db.prepare('UPDATE sections SET title=?, icon=? WHERE id=?').run(
-    title ?? existing.title,
-    icon  ?? existing.icon,
+  const { title, icon, sort_order } = await c.req.json()
+  db.prepare('UPDATE sections SET title=?, icon=?, sort_order=? WHERE id=?').run(
+    title      ?? existing.title,
+    icon       ?? existing.icon,
+    sort_order ?? existing.sort_order,
     id
   )
   return c.json(db.prepare('SELECT * FROM sections WHERE id = ?').get(id))
@@ -23,6 +24,14 @@ sections.put('/:id', requireAuth, async (c) => {
 sections.delete('/:id', requireAuth, (c) => {
   const { changes } = db.prepare('DELETE FROM sections WHERE id = ?').run(c.req.param('id'))
   if (changes === 0) return c.json({ error: 'Not found' }, 404)
+  return c.json({ ok: true })
+})
+
+// Reorder items within a section: POST /api/sections/:id/items/reorder  [{id, sort_order}]
+sections.post('/:id/items/reorder', requireAuth, async (c) => {
+  const payload = await c.req.json<Array<{ id: number; sort_order: number }>>()
+  const stmt = db.prepare('UPDATE items SET sort_order = ? WHERE id = ?')
+  db.transaction(() => { for (const { id, sort_order } of payload) stmt.run(sort_order, id) })()
   return c.json({ ok: true })
 })
 
