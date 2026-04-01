@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Vagamon Ride — Execution Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:     #080a08;
+  --s1:     #0f130f;
+  --s2:     #141914;
+  --b1:     #1c221c;
+  --b2:     #252d25;
+  --text:   #e8ede8;
+  --muted:  #566254;
+  --muted2: #788776;
+  --green:  #44ff88;
+  --amber:  #ffcc44;
+  --red:    #ff4455;
+  --blue:   #44aaff;
+  --purple: #bb88ff;
+  --pink:   #ff88bb;
+
+  --travel-bg:   #071828; --travel-bd:   #2266aa;
+  --rest-bg:     #120d28; --rest-bd:     #6644bb;
+  --activity-bg: #071a10; --activity-bd: #228855;
+  --food-bg:     #1a1200; --food-bd:     #aa8800;
+  --trek-bg:     #1a0808; --trek-bd:     #aa3322;
+  --fuel-bg:     #1a1500; --fuel-bd:     #ccaa00;
+
+  --fh: 'Bebas Neue', sans-serif;
+  --fm: 'DM Mono', monospace;
+  --fb: 'DM Sans', sans-serif;
+  --r: 10px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--fb); min-height: 100vh; overflow-x: hidden; }
+
+/* ── TOPBAR ── */
+#topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(8,10,8,0.92); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--b1);
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 16px; height: 52px;
+}
+.back-link { font-family: var(--fm); font-size: 11px; color: var(--muted2); text-decoration: none; flex-shrink: 0; transition: color 0.15s; letter-spacing: 0.5px; }
+.back-link:hover { color: var(--text); }
+.topbar-title { font-family: var(--fh); font-size: 18px; letter-spacing: 2px; flex: 1; color: var(--text); }
+.topbar-title span { color: var(--green); }
+#live-indicator { display: none; align-items: center; gap: 6px; font-family: var(--fm); font-size: 10px; color: var(--red); }
+#live-indicator.active { display: flex; }
+.live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* ── TAB NAV ── */
+#tab-nav {
+  position: sticky; top: 52px; z-index: 90;
+  background: rgba(8,10,8,0.95); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--b1);
+  display: flex; overflow-x: auto; scrollbar-width: none;
+}
+#tab-nav::-webkit-scrollbar { display: none; }
+.tab-btn {
+  font-family: var(--fm); font-size: 11px; letter-spacing: 0.5px;
+  padding: 12px 16px; cursor: pointer; white-space: nowrap;
+  background: transparent; border: none; color: var(--muted);
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.tab-btn:hover { color: var(--muted2); }
+.tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+
+/* ── VIEWS ── */
+.view { display: none; padding: 0 0 100px; }
+.view.active { display: block; }
+
+/* ── PAGE WRAPPER ── */
+.pw { max-width: 780px; margin: 0 auto; padding: 0 16px; }
+
+/* ── SECTION LABEL ── */
+.sec-label { font-family: var(--fm); font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; padding-top: 28px; display: flex; align-items: center; gap: 8px; }
+.sec-label::after { content: ''; flex: 1; height: 1px; background: var(--b1); }
+
+/* ════ OVERVIEW ════ */
+.hero-banner {
+  background: linear-gradient(135deg, #071828 0%, #0d1a0d 50%, #1a0808 100%);
+  border-bottom: 1px solid var(--b2); padding: 28px 16px 24px;
+  text-align: center;
+}
+.hero-emoji { font-size: 48px; margin-bottom: 10px; display: block; }
+.hero-title { font-family: var(--fh); font-size: clamp(32px, 7vw, 52px); letter-spacing: 3px; line-height: 1; }
+.hero-title span { color: var(--green); }
+.hero-sub { font-family: var(--fm); font-size: 11px; color: var(--muted2); letter-spacing: 1.5px; margin-top: 8px; }
+.hero-date { font-family: var(--fh); font-size: 16px; color: var(--amber); letter-spacing: 2px; margin-top: 6px; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 20px; }
+.stat-card { background: var(--s1); border: 1px solid var(--b2); border-radius: var(--r); padding: 14px 16px; }
+.stat-val { font-family: var(--fh); font-size: 28px; letter-spacing: 1px; line-height: 1; }
+.stat-val.green { color: var(--green); }
+.stat-val.amber { color: var(--amber); }
+.stat-val.red   { color: var(--red); }
+.stat-val.blue  { color: var(--blue); }
+.stat-lbl { font-family: var(--fm); font-size: 9px; color: var(--muted); letter-spacing: 1.5px; margin-top: 4px; text-transform: uppercase; }
+
+/* ── ROUTE MAP (SVG) ── */
+.route-map-wrap { background: var(--s1); border: 1px solid var(--b2); border-radius: var(--r); padding: 20px 12px; overflow-x: auto; }
+.route-svg-container { min-width: 600px; }
+
+/* ── RISK SUMMARY ── */
+.risk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.risk-badge { padding: 12px 14px; border-radius: 8px; border: 1px solid; }
+.risk-badge.high   { background: rgba(255,68,85,0.08);  border-color: rgba(255,68,85,0.3);  }
+.risk-badge.medium { background: rgba(255,204,68,0.08); border-color: rgba(255,204,68,0.3); }
+.risk-badge.low    { background: rgba(68,255,136,0.06); border-color: rgba(68,255,136,0.2); }
+.risk-badge-name { font-family: var(--fm); font-size: 11px; font-weight: 500; margin-bottom: 3px; }
+.risk-badge.high   .risk-badge-name { color: var(--red); }
+.risk-badge.medium .risk-badge-name { color: var(--amber); }
+.risk-badge.low    .risk-badge-name { color: var(--green); }
+.risk-badge-desc { font-size: 11px; color: var(--muted2); line-height: 1.4; }
+
+/* ════ TIMELINE ════ */
+.day-header {
+  border-radius: var(--r); padding: 16px 18px; margin: 24px 0 16px;
+  display: flex; align-items: center; gap: 14px; border: 1px solid;
+}
+.day-header.day0 { background: #071828; border-color: #2266aa; }
+.day-header.day1 { background: #1a0808; border-color: #aa3322; }
+.day-header.day2 { background: #071a10; border-color: #228855; }
+.day-header-emoji { font-size: 28px; flex-shrink: 0; }
+.day-header-info { flex: 1; }
+.day-header-title { font-family: var(--fh); font-size: 22px; letter-spacing: 1.5px; }
+.day-header.day0 .day-header-title { color: var(--blue); }
+.day-header.day1 .day-header-title { color: var(--red); }
+.day-header.day2 .day-header-title { color: var(--green); }
+.day-header-date { font-family: var(--fm); font-size: 10px; color: var(--muted2); letter-spacing: 1px; margin-top: 2px; }
+.day-header-badge { font-family: var(--fm); font-size: 9px; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+.day0 .day-header-badge { background: rgba(68,170,255,0.1); color: var(--blue); border: 1px solid rgba(68,170,255,0.3); }
+.day1 .day-header-badge { background: rgba(255,68,85,0.1);  color: var(--red);  border: 1px solid rgba(255,68,85,0.3); }
+.day2 .day-header-badge { background: rgba(68,255,136,0.1); color: var(--green);border: 1px solid rgba(68,255,136,0.3); }
+
+.timeline { position: relative; padding-left: 56px; }
+.tl-time-col {
+  position: absolute; left: 0; top: 0; width: 50px;
+  display: flex; flex-direction: column; pointer-events: none;
+}
+.tl-time { font-family: var(--fm); font-size: 10px; color: var(--muted); position: absolute; left: 0; transform: translateY(-50%); white-space: nowrap; }
+.tl-line { position: absolute; left: 50px; top: 0; bottom: 0; width: 2px; background: var(--b2); border-radius: 1px; }
+.tl-block {
+  position: relative; border-radius: 8px; border-left: 3px solid; padding: 12px 14px;
+  margin-bottom: 4px; transition: box-shadow 0.2s;
+}
+.tl-block::before {
+  content: ''; position: absolute; left: -10px; top: 14px;
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 2px solid; background: var(--bg);
+}
+.tl-block:hover { box-shadow: 0 2px 16px rgba(0,0,0,0.4); }
+.tl-block.active { box-shadow: 0 0 0 2px var(--green), 0 2px 16px rgba(68,255,136,0.15); }
+
+.tl-block.travel    { background: var(--travel-bg);   border-color: var(--travel-bd); }
+.tl-block.rest      { background: var(--rest-bg);     border-color: var(--rest-bd); }
+.tl-block.activity  { background: var(--activity-bg); border-color: var(--activity-bd); }
+.tl-block.food      { background: var(--food-bg);     border-color: var(--food-bd); }
+.tl-block.trek      { background: var(--trek-bg);     border-color: var(--trek-bd); }
+.tl-block.fuel      { background: var(--fuel-bg);     border-color: var(--fuel-bd); }
+
+.tl-block.travel::before   { border-color: var(--travel-bd);   background: var(--travel-bd); }
+.tl-block.rest::before     { border-color: var(--rest-bd);     background: var(--rest-bd); }
+.tl-block.activity::before { border-color: var(--activity-bd); background: var(--activity-bd); }
+.tl-block.food::before     { border-color: var(--food-bd);     background: var(--food-bd); }
+.tl-block.trek::before     { border-color: var(--trek-bd);     background: var(--trek-bd); }
+.tl-block.fuel::before     { border-color: var(--fuel-bd);     background: var(--fuel-bd); }
+
+.tl-top { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
+.tl-block-time { font-family: var(--fm); font-size: 10px; color: var(--muted2); flex-shrink: 0; margin-top: 2px; }
+.tl-block-name { font-size: 14px; font-weight: 500; flex: 1; }
+.tl-block-type { font-family: var(--fm); font-size: 9px; padding: 2px 8px; border-radius: 3px; flex-shrink: 0; letter-spacing: 0.5px; text-transform: uppercase; }
+.travel   .tl-block-type { background: rgba(68,170,255,0.1); color: var(--blue); }
+.rest     .tl-block-type { background: rgba(187,136,255,0.1); color: var(--purple); }
+.activity .tl-block-type { background: rgba(68,255,136,0.1); color: var(--green); }
+.food     .tl-block-type { background: rgba(255,204,68,0.1); color: var(--amber); }
+.trek     .tl-block-type { background: rgba(255,68,85,0.1);  color: var(--red); }
+.fuel     .tl-block-type { background: rgba(204,170,0,0.1);  color: var(--amber); }
+
+.tl-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+.tl-pill { font-family: var(--fm); font-size: 10px; color: var(--muted2); display: flex; align-items: center; gap: 4px; }
+.tl-note { font-family: var(--fm); font-size: 11px; color: var(--muted2); margin-top: 6px; line-height: 1.5; padding: 8px 10px; background: rgba(0,0,0,0.2); border-radius: 5px; }
+.tl-risk { display: inline-flex; align-items: center; gap: 4px; font-family: var(--fm); font-size: 9px; padding: 2px 8px; border-radius: 3px; margin-top: 6px; }
+.tl-risk.high   { background: rgba(255,68,85,0.12);  color: var(--red);   border: 1px solid rgba(255,68,85,0.25); }
+.tl-risk.medium { background: rgba(255,204,68,0.1);  color: var(--amber); border: 1px solid rgba(255,204,68,0.25); }
+.tl-risk.low    { background: rgba(68,255,136,0.08); color: var(--green); border: 1px solid rgba(68,255,136,0.2); }
+.tl-checkpoints { margin-top: 10px; display: flex; flex-direction: column; gap: 4px; }
+.tl-cp { display: flex; align-items: center; gap: 8px; font-family: var(--fm); font-size: 11px; padding: 6px 8px; border-radius: 5px; background: rgba(0,0,0,0.2); }
+.tl-cp-time { color: var(--amber); flex-shrink: 0; }
+.tl-cp-name { color: var(--text); flex: 1; }
+.tl-cp-note { color: var(--muted2); font-size: 10px; }
+
+/* ── STATUS BADGE ── */
+.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.status-dot.pending   { background: var(--muted); }
+.status-dot.active    { background: var(--green); animation: pulse 1.2s ease-in-out infinite; }
+.status-dot.done      { background: var(--blue); }
+.status-dot.skipped   { background: var(--amber); }
+
+/* ════ CHECKLISTS ════ */
+.checklist-progress-ring { width: 80px; height: 80px; flex-shrink: 0; }
+.checklist-header { display: flex; align-items: center; gap: 16px; background: var(--s1); border: 1px solid var(--b2); border-radius: var(--r); padding: 16px; margin-bottom: 4px; }
+.checklist-header-info { flex: 1; }
+.checklist-header-title { font-family: var(--fh); font-size: 20px; letter-spacing: 1px; }
+.checklist-header-sub { font-family: var(--fm); font-size: 10px; color: var(--muted2); margin-top: 2px; }
+.checklist-progress-text { font-family: var(--fm); font-size: 11px; color: var(--green); margin-top: 4px; }
+
+.cl-category { margin-bottom: 4px; }
+.cl-cat-label { font-family: var(--fm); font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; padding: 10px 14px 6px; display: block; }
+.cl-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 14px; border-bottom: 1px solid var(--b1);
+  background: var(--s1); transition: background 0.1s; cursor: pointer;
+  min-height: 52px;
+}
+.cl-item:first-of-type { border-radius: 8px 8px 0 0; }
+.cl-item:last-of-type { border-radius: 0 0 8px 8px; border-bottom: none; }
+.cl-item:only-of-type { border-radius: 8px; border-bottom: none; }
+.cl-item:hover { background: var(--s2); }
+.cl-item.checked .cl-text { color: var(--muted); text-decoration: line-through; }
+.cl-check {
+  width: 24px; height: 24px; border: 1.5px solid var(--b2); border-radius: 6px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  transition: all 0.15s; background: transparent; font-size: 14px;
+}
+.cl-item.checked .cl-check { background: var(--green); border-color: var(--green); }
+.cl-item.checked .cl-check::after { content: '✓'; color: #000; font-weight: bold; font-size: 13px; }
+.cl-text { flex: 1; font-size: 13.5px; line-height: 1.3; }
+.cl-mandatory { font-family: var(--fm); font-size: 9px; padding: 2px 7px; border-radius: 10px; flex-shrink: 0; }
+.cl-mandatory.must { background: rgba(255,68,85,0.12); color: var(--red); border: 1px solid rgba(255,68,85,0.25); }
+.cl-mandatory.opt  { background: rgba(119,135,118,0.12); color: var(--muted2); border: 1px solid var(--b2); }
+
+/* ════ LIVE TRACKING ════ */
+#live-view { min-height: 80vh; }
+.live-idle { text-align: center; padding: 40px 20px; }
+.live-idle-icon { font-size: 64px; margin-bottom: 16px; }
+.live-idle-title { font-family: var(--fh); font-size: 28px; letter-spacing: 2px; color: var(--muted2); margin-bottom: 8px; }
+.live-idle-sub { font-family: var(--fm); font-size: 11px; color: var(--muted); margin-bottom: 32px; line-height: 1.6; }
+.start-btn { font-family: var(--fh); font-size: 22px; letter-spacing: 2px; background: var(--green); color: #000; border: none; border-radius: 10px; padding: 18px 32px; cursor: pointer; width: 100%; max-width: 400px; transition: opacity 0.15s; }
+.start-btn:hover { opacity: 0.85; }
+.stop-btn { font-family: var(--fm); font-size: 12px; background: none; border: 1px solid rgba(255,68,85,0.4); color: var(--red); border-radius: 7px; padding: 10px 20px; cursor: pointer; margin-top: 12px; transition: background 0.15s; }
+.stop-btn:hover { background: rgba(255,68,85,0.1); }
+
+.live-active { padding: 0; }
+.live-phase-card {
+  background: linear-gradient(135deg, #071a10, #0d2a10);
+  border: 1px solid rgba(68,255,136,0.25);
+  border-radius: var(--r); padding: 20px; margin-bottom: 12px;
+}
+.live-phase-label { font-family: var(--fm); font-size: 9px; color: var(--green); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+.live-phase-name { font-family: var(--fh); font-size: 26px; letter-spacing: 1.5px; color: var(--text); margin-bottom: 4px; }
+.live-phase-time { font-family: var(--fm); font-size: 12px; color: var(--muted2); }
+
+.live-clock { font-family: var(--fh); font-size: 52px; letter-spacing: 4px; color: var(--green); text-align: center; padding: 16px 0 8px; }
+.live-elapsed { font-family: var(--fm); font-size: 11px; color: var(--muted2); text-align: center; margin-bottom: 20px; }
+
+.live-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.live-stat-card { background: var(--s1); border: 1px solid var(--b2); border-radius: 8px; padding: 14px; }
+.live-stat-val { font-family: var(--fh); font-size: 24px; letter-spacing: 1px; }
+.live-stat-val.green  { color: var(--green); }
+.live-stat-val.amber  { color: var(--amber); }
+.live-stat-val.red    { color: var(--red); }
+.live-stat-val.blue   { color: var(--blue); }
+.live-stat-lbl { font-family: var(--fm); font-size: 9px; color: var(--muted); letter-spacing: 1px; margin-top: 2px; }
+
+.next-cp-card { background: var(--s1); border: 1px solid rgba(255,204,68,0.2); border-radius: var(--r); padding: 16px; margin-bottom: 12px; }
+.next-cp-label { font-family: var(--fm); font-size: 9px; color: var(--amber); letter-spacing: 2px; margin-bottom: 6px; }
+.next-cp-name { font-size: 16px; font-weight: 500; margin-bottom: 3px; }
+.next-cp-eta { font-family: var(--fm); font-size: 13px; color: var(--amber); }
+.next-cp-dist { font-family: var(--fm); font-size: 11px; color: var(--muted2); margin-top: 2px; }
+
+.delay-meter { background: var(--s1); border: 1px solid var(--b2); border-radius: var(--r); padding: 14px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; }
+.delay-label { font-family: var(--fm); font-size: 10px; color: var(--muted2); flex: 1; }
+.delay-val { font-family: var(--fh); font-size: 20px; letter-spacing: 1px; }
+.delay-val.ahead  { color: var(--green); }
+.delay-val.on-time { color: var(--blue); }
+.delay-val.late   { color: var(--amber); }
+.delay-val.very-late { color: var(--red); }
+
+.alert-card { padding: 12px 14px; border-radius: 8px; margin-bottom: 8px; font-family: var(--fm); font-size: 11px; border: 1px solid; line-height: 1.5; }
+.alert-card.warn { background: rgba(255,204,68,0.08); border-color: rgba(255,204,68,0.25); color: var(--amber); }
+.alert-card.danger { background: rgba(255,68,85,0.08); border-color: rgba(255,68,85,0.25); color: var(--red); }
+.alert-card.info { background: rgba(68,170,255,0.08); border-color: rgba(68,170,255,0.25); color: var(--blue); }
+
+.mark-done-btn { font-family: var(--fm); font-size: 12px; background: rgba(68,255,136,0.1); border: 1px solid rgba(68,255,136,0.3); color: var(--green); border-radius: 7px; padding: 12px; cursor: pointer; width: 100%; margin-top: 8px; letter-spacing: 0.5px; transition: background 0.15s; }
+.mark-done-btn:hover { background: rgba(68,255,136,0.2); }
+
+/* ════ RISKS ════ */
+.risk-card { background: var(--s1); border-radius: var(--r); border: 1px solid var(--b2); overflow: hidden; margin-bottom: 10px; }
+.risk-card-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; }
+.risk-level-bar { width: 4px; align-self: stretch; border-radius: 2px; flex-shrink: 0; }
+.risk-level-bar.high   { background: var(--red); }
+.risk-level-bar.medium { background: var(--amber); }
+.risk-level-bar.low    { background: var(--green); }
+.risk-icon { font-size: 24px; flex-shrink: 0; }
+.risk-info { flex: 1; }
+.risk-name { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+.risk-level-tag { font-family: var(--fm); font-size: 9px; padding: 2px 8px; border-radius: 3px; display: inline-block; }
+.risk-level-tag.high   { background: rgba(255,68,85,0.1);  color: var(--red);   border: 1px solid rgba(255,68,85,0.25); }
+.risk-level-tag.medium { background: rgba(255,204,68,0.1); color: var(--amber); border: 1px solid rgba(255,204,68,0.25); }
+.risk-level-tag.low    { background: rgba(68,255,136,0.08);color: var(--green); border: 1px solid rgba(68,255,136,0.2); }
+.risk-body { padding: 0 16px 14px; }
+.risk-when { font-family: var(--fm); font-size: 10px; color: var(--muted2); margin-bottom: 8px; }
+.risk-mitigation { display: flex; flex-direction: column; gap: 4px; }
+.risk-mit-item { display: flex; gap: 8px; font-size: 12px; color: var(--muted2); line-height: 1.4; }
+.risk-mit-item::before { content: '→'; color: var(--green); flex-shrink: 0; }
+
+/* ── FOOTER ACTION ── */
+#footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(8,10,8,0.95); backdrop-filter: blur(12px); border-top: 1px solid var(--b1); padding: 12px 16px; z-index: 80; }
+.footer-inner { max-width: 780px; margin: 0 auto; display: flex; gap: 10px; align-items: center; }
+.footer-checklist-summary { font-family: var(--fm); font-size: 11px; color: var(--muted2); flex: 1; }
+.footer-checklist-summary strong { color: var(--green); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 3px; }
+
+/* ── PRINT ── */
+@media print {
+  #topbar, #tab-nav, #footer-bar, .start-btn, .stop-btn, .mark-done-btn { display: none !important; }
+  .view { display: block !important; }
+  body { background: #fff; color: #000; }
+}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <a href="/" class="back-link">← HOME</a>
+  <div class="topbar-title">VAGAMON <span>RIDE</span></div>
+  <div id="live-indicator">
+    <div class="live-dot"></div>
+    <span>LIVE</span>
+  </div>
+</div>
+
+<div id="tab-nav">
+  <button class="tab-btn active" onclick="showTab('overview')">🗺️ OVERVIEW</button>
+  <button class="tab-btn" onclick="showTab('timeline')">📅 TIMELINE</button>
+  <button class="tab-btn" onclick="showTab('checklists')">✅ CHECKLISTS</button>
+  <button class="tab-btn" onclick="showTab('live')">🔴 LIVE</button>
+  <button class="tab-btn" onclick="showTab('risks')">⚠️ RISKS</button>
+</div>
+
+<!-- ═══ OVERVIEW ═══ -->
+<div id="view-overview" class="view active">
+  <div class="hero-banner">
+    <span class="hero-emoji">🏍️</span>
+    <div class="hero-title">VAGAMON <span>MONSOON</span> RIDE</div>
+    <div class="hero-sub">KABI &amp; DEVA · PULSAR N150</div>
+    <div class="hero-date">02 – 04 JULY 2026</div>
+  </div>
+
+  <div class="pw">
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-val green">280+</div><div class="stat-lbl">Total KM</div></div>
+      <div class="stat-card"><div class="stat-val amber">3</div><div class="stat-lbl">Days</div></div>
+      <div class="stat-card"><div class="stat-val blue">2</div><div class="stat-lbl">Night Rides</div></div>
+      <div class="stat-card"><div class="stat-val red">HIGH</div><div class="stat-lbl">Risk Level</div></div>
+    </div>
+
+    <div class="sec-label">ROUTE</div>
+    <div class="route-map-wrap">
+      <div class="route-svg-container">
+        <svg viewBox="0 0 640 180" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:640px">
+          <!-- Road line -->
+          <path d="M 30 90 L 180 90" stroke="#2266aa" stroke-width="3" stroke-dasharray="6,3" fill="none"/>
+          <path d="M 180 90 L 300 90" stroke="#226644" stroke-width="3" stroke-dasharray="6,3" fill="none"/>
+          <path d="M 300 90 C 340 90 350 70 380 60 C 410 50 420 70 460 90" stroke="#aa3322" stroke-width="3" fill="none"/>
+          <path d="M 460 90 C 490 110 510 130 540 110 C 560 95 570 80 590 90" stroke="#664422" stroke-width="4" fill="none"/>
+
+          <!-- Distance labels -->
+          <text x="105" y="80" fill="#4488cc" font-family="DM Mono,monospace" font-size="9" text-anchor="middle">70 km · HWY</text>
+          <text x="240" y="80" fill="#448866" font-family="DM Mono,monospace" font-size="9" text-anchor="middle">50 km</text>
+          <text x="380" y="38" fill="#cc5533" font-family="DM Mono,monospace" font-size="9" text-anchor="middle">100 km</text>
+          <text x="525" y="155" fill="#ffaa44" font-family="DM Mono,monospace" font-size="9" text-anchor="middle">40 km · GHAT</text>
+
+          <!-- Night ride indicator -->
+          <rect x="22" y="100" width="66" height="14" rx="3" fill="rgba(187,136,255,0.15)" stroke="#6644bb" stroke-width="0.5"/>
+          <text x="55" y="111" fill="#9966ee" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">NIGHT RIDE</text>
+          <rect x="292" y="100" width="66" height="14" rx="3" fill="rgba(255,68,85,0.15)" stroke="#aa3322" stroke-width="0.5"/>
+          <text x="325" y="111" fill="#ff6655" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">3AM RIDE</text>
+
+          <!-- City nodes -->
+          <!-- MachDatum -->
+          <circle cx="30" cy="90" r="12" fill="#0f2040" stroke="#4488cc" stroke-width="2"/>
+          <text x="30" y="94" fill="#ffffff" font-size="11" text-anchor="middle">🏢</text>
+          <text x="30" y="115" fill="#99bbdd" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">OFFICE</text>
+          <text x="30" y="125" fill="#556677" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">18:00</text>
+
+          <!-- Palakkad -->
+          <circle cx="180" cy="90" r="10" fill="#0f2810" stroke="#44aa44" stroke-width="2"/>
+          <text x="180" y="94" fill="#ffffff" font-size="10" text-anchor="middle">⛽</text>
+          <text x="180" y="112" fill="#88cc88" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">PALAKKAD</text>
+          <text x="180" y="122" fill="#556677" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">~19:30</text>
+
+          <!-- Thrissur -->
+          <circle cx="300" cy="90" r="12" fill="#120d28" stroke="#6644bb" stroke-width="2"/>
+          <text x="300" y="94" fill="#ffffff" font-size="11" text-anchor="middle">🏨</text>
+          <text x="300" y="112" fill="#aa88ff" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">THRISSUR</text>
+          <text x="300" y="122" fill="#556677" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">SLEEP</text>
+
+          <!-- Thodupuzha -->
+          <circle cx="460" cy="90" r="10" fill="#1a1200" stroke="#aaaa00" stroke-width="2"/>
+          <text x="460" y="94" fill="#ffffff" font-size="10" text-anchor="middle">⛽</text>
+          <text x="460" y="112" fill="#cccc44" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">THODUPUZHA</text>
+          <text x="460" y="122" fill="#556677" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">~06:00</text>
+
+          <!-- Vagamon -->
+          <circle cx="590" cy="90" r="13" fill="#1a0808" stroke="#cc4433" stroke-width="2.5"/>
+          <text x="590" y="94" fill="#ffffff" font-size="12" text-anchor="middle">🏔️</text>
+          <text x="590" y="112" fill="#ff8866" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">VAGAMON</text>
+          <text x="590" y="122" fill="#ffcc44" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">~07:40</text>
+
+          <!-- Kurisumala inset -->
+          <circle cx="590" cy="45" r="9" fill="#071a10" stroke="#228855" stroke-width="1.5"/>
+          <text x="590" y="49" fill="#ffffff" font-size="9" text-anchor="middle">⛰️</text>
+          <line x1="590" y1="54" x2="590" y2="77" stroke="#228855" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <text x="608" y="48" fill="#44ff88" font-family="DM Mono,monospace" font-size="8">KURISUMALA</text>
+          <text x="608" y="58" fill="#556677" font-family="DM Mono,monospace" font-size="7">DAY 2 TREK</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="sec-label">TRIP PHASES</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:6px;font-family:var(--fm);font-size:10px;color:var(--blue)"><div style="width:14px;height:14px;background:var(--travel-bd);border-radius:3px"></div>TRAVEL</div>
+        <div style="display:flex;align-items:center;gap:6px;font-family:var(--fm);font-size:10px;color:var(--purple)"><div style="width:14px;height:14px;background:var(--rest-bd);border-radius:3px"></div>REST / SLEEP</div>
+        <div style="display:flex;align-items:center;gap:6px;font-family:var(--fm);font-size:10px;color:var(--green)"><div style="width:14px;height:14px;background:var(--activity-bd);border-radius:3px"></div>ACTIVITY</div>
+        <div style="display:flex;align-items:center;gap:6px;font-family:var(--fm);font-size:10px;color:var(--amber)"><div style="width:14px;height:14px;background:var(--food-bd);border-radius:3px"></div>FOOD</div>
+        <div style="display:flex;align-items:center;gap:6px;font-family:var(--fm);font-size:10px;color:var(--red)"><div style="width:14px;height:14px;background:var(--trek-bd);border-radius:3px"></div>TREK</div>
+      </div>
+    </div>
+
+    <div class="sec-label">KEY RISKS</div>
+    <div class="risk-grid">
+      <div class="risk-badge high"><div class="risk-badge-name">⚡ Fatigue</div><div class="risk-badge-desc">3AM departure after short sleep</div></div>
+      <div class="risk-badge high"><div class="risk-badge-name">🌫️ Fog</div><div class="risk-badge-desc">Early morning ghat section</div></div>
+      <div class="risk-badge high"><div class="risk-badge-name">🌧️ Wet Roads</div><div class="risk-badge-desc">Monsoon — July conditions</div></div>
+      <div class="risk-badge medium"><div class="risk-badge-name">⏰ Timeline</div><div class="risk-badge-desc">Activities may overrun</div></div>
+    </div>
+
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<!-- ═══ TIMELINE ═══ -->
+<div id="view-timeline" class="view">
+  <div class="pw">
+
+    <!-- DAY 0 -->
+    <div class="day-header day0">
+      <div class="day-header-emoji">🌙</div>
+      <div class="day-header-info">
+        <div class="day-header-title">DAY 0 — DEPARTURE</div>
+        <div class="day-header-date">Thursday, 02 July 2026</div>
+      </div>
+      <div class="day-header-badge">NIGHT RIDE</div>
+    </div>
+
+    <div class="timeline" id="tl-day0">
+      <div id="block-dep" class="tl-block travel">
+        <div class="tl-top">
+          <span class="tl-block-time">18:00</span>
+          <span class="tl-block-name">🏢 Office Departure — Ondipudur</span>
+          <span class="tl-block-type">TRAVEL</span>
+        </div>
+        <div class="tl-meta">
+          <span class="tl-pill">📍 70 km to Palakkad</span>
+          <span class="tl-pill">⏱ ~1h 30m</span>
+          <span class="tl-pill">🛣️ NH 544 · Highway</span>
+          <span class="tl-pill">💨 55 km/h avg</span>
+        </div>
+        <div class="tl-note">Night highway. Stay in left lane. Heavy trucks active. Full tank before leaving.</div>
+        <div class="tl-risk medium">⚠️ MEDIUM — Night traffic, first stretch</div>
+      </div>
+
+      <div id="block-pkd" class="tl-block fuel">
+        <div class="tl-top">
+          <span class="tl-block-time">~19:30</span>
+          <span class="tl-block-name">⛽ Palakkad — Fuel + Break</span>
+          <span class="tl-block-type">FUEL STOP</span>
+        </div>
+        <div class="tl-meta">
+          <span class="tl-pill">⏱ 10–15 min</span>
+          <span class="tl-pill">🧃 Tea + stretch</span>
+        </div>
+        <div class="tl-note">Refuel here. Don't skip. Tea break — hydrate. Check tyre pressure quickly.</div>
+      </div>
+
+      <div id="block-pkd-tsr" class="tl-block travel">
+        <div class="tl-top">
+          <span class="tl-block-time">~19:45</span>
+          <span class="tl-block-name">🛣️ Palakkad → Thrissur</span>
+          <span class="tl-block-type">TRAVEL</span>
+        </div>
+        <div class="tl-meta">
+          <span class="tl-pill">📍 50 km</span>
+          <span class="tl-pill">⏱ ~1h 10m</span>
+          <span class="tl-pill">🛣️ State highway</span>
+          <span class="tl-pill">💨 50–60 km/h</span>
+        </div>
+        <div class="tl-note">State roads. Mixed traffic. No overtaking on narrow sections. Reduce speed through towns.</div>
+        <div class="tl-risk low">✓ LOW — Familiar stretch, moderate traffic</div>
+      </div>
+
+      <div id="block-tsr-hotel" class="tl-block rest">
+        <div class="tl-top">
+          <span class="tl-block-time">~21:00</span>
+          <span class="tl-block-name">🏨 Thrissur — Hotel Check-in</span>
+          <span class="tl-block-type">REST</span>
+        </div>
+        <div class="tl-meta">
+          <span class="tl-pill">⏱ 30 min check-in</span>
+        </div>
+        <div class="tl-note">Book in advance. Confirm bike parking is covered (monsoon). Quick shower + eat light.</div>
+      </div>
+
+      <div id="block-sleep-d0" class="tl-block rest">
+        <div class="tl-top">
+          <span class="tl-block-time">22:00</span>
+          <span class="tl-block-name">😴 Sleep — NON-NEGOTIABLE</span>
+          <span class="tl-block-type">SLEEP</span>
+        </div>
+        <div class="tl-meta">
+          <span class="tl-pill">⏱ 4 hours minimum</span>
+          <span class="tl-pill">⏰ Wake: 02:00</span>
+        </div>
+        <div class="tl-note">Set 2 alarms. Do not skip this. Fatigue at 3AM on ghat roads = fatal risk.</div>
+        <div class="tl-risk high">🚨 HIGH — Sleep deprivation is the #1 risk on this trip</div>
+      </div>
+
+    </div>
+
+    <!-- DAY 1 -->
+    <div class="day-header day1">
+      <div class="day-header-emoji">🌄</div>
+      <div class="day-header-info">
+        <div class="day-header-title">DAY 1 — GHAT ASSAULT</div>
+        <div class="day-header-date">Friday, 03 July 2026</div>
+      </div>
+      <div class="day-header-badge">⚠️ HIGH RISK</div>
+    </div>
+
+    <div class="timeline" id="tl-day1">
+
+      <div id="block-wakeup" class="tl-block rest">
+        <div class="tl-top">
+          <span class="tl-block-time">02:00</span>
+          <span class="tl-block-name">⏰ Wake Up + Bike Check</span>
+          <span class="tl-block-type">PREP</span>
+        </div>
+        <div class="tl-meta"><span class="tl-pill">⏱ 1 hour</span></div>
+        <div class="tl-note">Get dressed. Check chain, brakes, tyre pressure, lights. Eat something light. Hydrate.</div>
+      </div>
+
+      <div id="block-night-ride" class="tl-block travel">
+        <div class="tl-top">
+          <span class="tl-block-time">03:00</span>
+          <span class="tl-block-name">🏍️ Thrissur → Thodupuzha — Night Ride</span>
+          <span class="tl-block-type">TRAVEL</span>
+        </div>
+        <div class="tl-meta">
+          <span class="tl-pill">📍 100 km</span>
+          <span class="tl-pill">⏱ ~3h with breaks</span>
+          <span class="tl-pill">💨 40–50 km/h avg</span>
+          <span class="tl-pill">🌫️ Fog possible</span>
+        </div>
+        <div class="tl-note">Zero overtaking in fog. High-beam if no oncoming traffic. Pull over if visibility drops below 30m. Break every 45 min.</div>
+        <div class="tl-risk high">🚨 HIGH — Fog + fatigue + darkness + wet roads</div>
+        <div class="tl-checkpoints">
+          <div class="tl-cp"><span class="tl-cp-time">~04:30</span><span class="tl-cp-name">📍 Chalakudy checkpoint</span><span class="tl-cp-note">Stretch break</span></div>
+        </div>
+      </div>
+
+      <div id="block-tdp-fuel" class="tl-block fuel">
+        <div class="tl-top">
+          <span class="tl-block-time">~06:00</span>
+          <span class="tl-block-name">⛽ Thodupuzha — LAST FUEL BEFORE GHATS</span>
+          <span class="tl-block-type">CRITICAL STOP</span>
+        </div>
+        <div class="tl-meta"><span class="tl-pill">⏱ 10 min</span></div>
+        <div class="tl-note">FULL TANK. No pumps on ghat road. Eat something. Last mobile signal may be here.</div>
+        <div class="tl-risk high">🚨 Skip this = stuck on ghat with no fuel</div>
+      </div>
+
+      <div id="block-ghat" class="tl-block travel">
+        <div class="tl-top">
+          <span class="tl-block-time">06:10</span>
+          <span class="tl-block-name">⛰️ Thodupuzha → Vagamon — GHAT SECTION</span>
+          <span class="tl-block-type">GHAT RIDE</span>
+        </div>
+        <div class="tl-meta">
+          <span class="tl-pill">📍 40 km</span>
+          <span class="tl-pill">⏱ ~1h 30m</span>
+          <span class="tl-pill">💨 20–25 km/h MAX</span>
+          <span class="tl-pill">🌧️ Wet + steep</span>
+        </div>
+        <div class="tl-note">HAIRPIN BENDS. Engine brake + rear brake on descents. No clutch-riding downhill. Pillion must sit still. Horn on every blind curve.</div>
+        <div class="tl-risk high">🚨 HIGH — Slippery ghats + fog + pillion + loaded bike</div>
+      </div>
+
+      <div id="block-arrival" class="tl-block activity">
+        <div class="tl-top">
+          <span class="tl-block-time">~07:40</span>
+          <span class="tl-block-name">🏔️ VAGAMON ARRIVAL</span>
+          <span class="tl-block-type">MILESTONE</span>
+        </div>
+        <div class="tl-meta"><span class="tl-pill">🎉 Target ETA · 280 km done</span></div>
+        <div class="tl-note">Park safely. Bike off. Breathe. You made it. Take photos. Stretch.</div>
+      </div>
+
+      <div id="block-breakfast" class="tl-block food">
+        <div class="tl-top">
+          <span class="tl-block-time">07:45</span>
+          <span class="tl-block-name">🍳 Breakfast</span>
+          <span class="tl-block-type">FOOD</span>
+        </div>
+        <div class="tl-meta"><span class="tl-pill">⏱ 45 min</span></div>
+        <div class="tl-note">Light meal. Don't overeat before activities. Hydrate well — you've been riding all night.</div>
+      </div>
+
+      <div id="block-meadows" class="tl-block activity">
+        <div class="tl-top">
+          <span class="tl-block-time">09:00</span>
+          <span class="tl-block-name">🌿 Vagamon Meadows</span>
+          <span class="tl-block-type">SIGHTSEEING</span>
+        </div>
+        <div class="tl-meta"><span class="tl-pill">⏱ 30 min</span><span class="tl-pill">📸 Photos</span></div>
+      </div>
+
+      <div id="block-advpark" class="tl-block activity">
+        <div class="tl-top">
+          <span class="tl-block-time">10:00</span>
+          <span class="tl-block-name">🎢 Adventure Park + Glass Bridge</span>
+          <span class="tl-block-type">ACTIVITY</span>
+        </div>
+        <div class="tl-meta"><span class="tl-pill">⏱ 1h 30m</span><span class="tl-pill">💰 Entry fee</span></div>
+        <div class="tl-note">Cancel if weather worsens. Don't push tired bodies on physical activities.</div>
+        <div class="tl-risk medium">⚠️ MEDIUM — Fatigue may reduce coordination</div>
+      </div>
+
+      <div id="block-checkin" class="tl-block rest">
+        <div class="tl-top">
+          <span class="tl-block-time">13:30</span>
+          <span class="tl-block-name">🏨 Hotel Check-in + REST</span>
+          <span class="tl-block-type">REST</span>
+        </div>
+        <div class="tl-meta"><span class="tl-pill">⏱ 1h 30m rest</span></div>
+        <div class="tl-note">Mandatory rest. You've been awake since 2AM. Bodies need recovery before evening activities.</div>
+      </div>
+
+      <div id="block-pine" class="tl-block activity">
+        <div class="tl-top">
+          <span class="tl-block-time">15:30</span>
+          <span class="tl-block-name">🌲 Pine Forest</span>
+          <span class="tl-block-type">ACTIVITY</span>
+        </div>
+        <div class="tl-meta"><span class="tl-pill">⏱ 2h 30m</span><span class="tl-pill">🌅 Golden hour</span></div>
+        <div class="tl-note">Best light 16:30–18:00. Easy walking. Enjoy — tomorrow is an early start.</div>
+      </div>
+
+      <div id="block-dinner-d1" class="tl-block food">
+        <div class="tl-top">
+          <span class="tl-block-time">18:30</span>
+          <span class="tl-block-name">🍽️ Dinner + Campfire + Early Sleep</span>
+          <span class="tl-block-type">REST</span>
+        </div>
+        <div class="tl-meta"><span class="tl-pill">🔥 Campfire if available</span><span class="tl-pill">⏰ Sleep by 21:00</span></div>
+        <div class="tl-note">Sleep by 9PM. Wake up is 5AM tomorrow for trek.</div>
+      </div>
+
+    </div>
+
+    <!-- DAY 2 -->
+    <div class="day-header day2">
+      <div class="day-header-emoji">⛰️</div>
+      <div class="day-header-info">
+        <div class="day-header-title">DAY 2 — KURISUMALA + RETURN</div>
+        <div class="day-header-date">Saturday, 04 July 2026</div>
+      </div>
+      <div class="day-header-badge">TREK + 280KM HOME</div>
+    </div>
+
+    <div class="timeline" id="tl-day2">
+
+      <div id="block-d2-wake" class="tl-block rest">
+        <div class="tl-top">
+          <span class="tl-block-time">05:00</span>
+          <span class="tl-block-name">⏰ Wake + Trek Prep</span>
+          <span class="tl-block-type">PREP</span>
+        </div>
+        <div class="tl-meta"><span class="tl-pill">⏱ 1 hour</span></div>
+        <div class="tl-note">Light breakfast. Grip shoes mandatory. Leave phone power bank. Water bottle essential.</div>
+      </div>
+
+      <div id="block-trek-up" class="tl-block trek">
+        <div class="tl-top">
+          <span class="tl-block-time">06:00</span>
+          <span class="tl-block-name">⛰️ Kurisumala Trek — ASCENT</span>
+          <span class="tl-block-type">TREK</span>
+        </div>
+        <div class="tl-meta">
+          <span class="tl-pill">⏱ 1h 30m</span>
+          <span class="tl-pill">🥾 Grip shoes mandatory</span>
+          <span class="tl-pill">🌿 Wet grass</span>
+        </div>
+        <div class="tl-note">Wet grass on slopes — grip shoes are non-negotiable. Stay on path. Early morning is best window before clouds roll in.</div>
+        <div class="tl-risk medium">⚠️ MEDIUM — Wet terrain after monsoon rain</div>
+      </div>
+
+      <div id="block-summit" class="tl-block activity">
+        <div class="tl-top">
+          <span class="tl-block-time">07:30</span>
+          <span class="tl-block-name">🏔️ SUMMIT — Kurisumala</span>
+          <span class="tl-block-type">MILESTONE</span>
+        </div>
+        <div class="tl-meta"><span class="tl-pill">⏱ 30 min at top</span><span class="tl-pill">📸 Views</span></div>
+        <div class="tl-note">Take your time. Photos. Enjoy. This is why you came.</div>
+      </div>
+
+      <div id="block-trek-down" class="tl-block trek">
+        <div class="tl-top">
+          <span class="tl-block-time">08:00</span>
+          <span class="tl-block-name">⛰️ Descent</span>
+          <span class="tl-block-type">TREK</span>
+        </div>
+        <div class="tl-meta"><span class="tl-pill">⏱ 1h 30m</span></div>
+        <div class="tl-note">Descents are harder on knees. Take it slow. Wet grass = slip risk on way down.</div>
+        <div class="tl-risk medium">⚠️ MEDIUM — Descent more slippery than ascent</div>
+      </div>
+
+      <div id="block-pack" class="tl-block rest">
+        <div class="tl-top">
+          <span class="tl-block-time">09:30</span>
+          <span class="tl-block-name">🧳 Freshen Up + Pack + Check Out</span>
+          <span class="tl-block-type">ADMIN</span>
+        </div>
+        <div class="tl-meta"><span class="tl-pill">⏱ 1h 30m</span><span class="tl-pill">⚙️ Bike check</span></div>
+        <div class="tl-note">Final bike inspection before 280km return. Chain, tyres, lights. Eat a proper meal before riding.</div>
+      </div>
+
+      <div id="block-return" class="tl-block travel">
+        <div class="tl-top">
+          <span class="tl-block-time">11:00</span>
+          <span class="tl-block-name">🏍️ RETURN RIDE — Vagamon → Home</span>
+          <span class="tl-block-type">TRAVEL</span>
+        </div>
+        <div class="tl-meta">
+          <span class="tl-pill">📍 280 km</span>
+          <span class="tl-pill">⏱ 6–7 hours</span>
+          <span class="tl-pill">💨 50 km/h avg</span>
+        </div>
+        <div class="tl-note">Break every 60–70 km. No riding after 6PM if delayed — don't push tired bodies at night. Target home by 18:00.</div>
+        <div class="tl-risk medium">⚠️ MEDIUM — Post-trek fatigue + long highway return</div>
+        <div class="tl-checkpoints">
+          <div class="tl-cp"><span class="tl-cp-time">~12:30</span><span class="tl-cp-name">⛽ Thodupuzha</span><span class="tl-cp-note">Fuel + break</span></div>
+          <div class="tl-cp"><span class="tl-cp-time">~14:30</span><span class="tl-cp-name">☕ Thrissur or Palakkad</span><span class="tl-cp-note">Meal break</span></div>
+          <div class="tl-cp"><span class="tl-cp-time">~18:00</span><span class="tl-cp-name">🏠 Home</span><span class="tl-cp-note">Target ETA</span></div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ CHECKLISTS ═══ -->
+<div id="view-checklists" class="view">
+  <div class="pw">
+
+    <!-- BIKE CHECKLIST -->
+    <div class="sec-label">🏍️ BIKE PREPARATION CHECKLIST</div>
+    <div class="checklist-header" id="bike-header">
+      <svg class="checklist-progress-ring" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="34" fill="none" stroke="#1c221c" stroke-width="6"/>
+        <circle id="bike-ring" cx="40" cy="40" r="34" fill="none" stroke="#44ff88" stroke-width="6"
+          stroke-dasharray="213.6" stroke-dashoffset="213.6" stroke-linecap="round"
+          transform="rotate(-90 40 40)" style="transition:stroke-dashoffset 0.5s ease"/>
+        <text id="bike-ring-pct" x="40" y="45" fill="#44ff88" font-family="DM Mono,monospace" font-size="14" font-weight="500" text-anchor="middle">0%</text>
+      </svg>
+      <div class="checklist-header-info">
+        <div class="checklist-header-title">BIKE PREP</div>
+        <div class="checklist-header-sub">Pulsar N150 · Pre-departure check</div>
+        <div class="checklist-progress-text" id="bike-progress-text">0 / 15 done</div>
+      </div>
+    </div>
+
+    <div id="bike-checklist"></div>
+
+    <!-- RIDER CHECKLIST -->
+    <div class="sec-label">🧑 RIDER & GEAR CHECKLIST</div>
+    <div class="checklist-header" id="rider-header">
+      <svg class="checklist-progress-ring" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="34" fill="none" stroke="#1c221c" stroke-width="6"/>
+        <circle id="rider-ring" cx="40" cy="40" r="34" fill="none" stroke="#44aaff" stroke-width="6"
+          stroke-dasharray="213.6" stroke-dashoffset="213.6" stroke-linecap="round"
+          transform="rotate(-90 40 40)" style="transition:stroke-dashoffset 0.5s ease"/>
+        <text id="rider-ring-pct" x="40" y="45" fill="#44aaff" font-family="DM Mono,monospace" font-size="14" font-weight="500" text-anchor="middle">0%</text>
+      </svg>
+      <div class="checklist-header-info">
+        <div class="checklist-header-title">RIDER GEAR</div>
+        <div class="checklist-header-sub">Kabi + Deva · Full kit</div>
+        <div class="checklist-progress-text" style="color:var(--blue)" id="rider-progress-text">0 / 14 done</div>
+      </div>
+    </div>
+
+    <div id="rider-checklist"></div>
+
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<!-- ═══ LIVE TRACKING ═══ -->
+<div id="view-live" class="view">
+  <div class="pw" id="live-content">
+    <div class="live-idle">
+      <div class="live-idle-icon">🏍️</div>
+      <div class="live-idle-title">READY TO RIDE</div>
+      <div class="live-idle-sub">Tap START when you depart office on Day 0.<br/>The tracker will follow you through all 3 days.</div>
+      <button class="start-btn" onclick="startTrip()">🚀 START TRIP</button>
+      <br/>
+      <button class="stop-btn" onclick="resetTrip()" style="display:none" id="stop-btn-idle">■ RESET TRACKER</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ RISKS ═══ -->
+<div id="view-risks" class="view">
+  <div class="pw">
+    <div class="sec-label">RISK ASSESSMENT — VAGAMON JULY 2026</div>
+
+    <div class="risk-card">
+      <div class="risk-card-header">
+        <div class="risk-level-bar high"></div>
+        <div class="risk-icon">😴</div>
+        <div class="risk-info">
+          <div class="risk-name">Fatigue — Sleep Deprivation</div>
+          <span class="risk-level-tag high">🚨 HIGH</span>
+        </div>
+      </div>
+      <div class="risk-body">
+        <div class="risk-when">📅 Day 0 (22:00–02:00) + Day 1 (03:00–07:40) · Only 4 hours sleep before 280km ghat ride</div>
+        <div class="risk-mitigation">
+          <div class="risk-mit-item">Sleep by 22:00 sharp. Set 2 alarms. No late night scrolling.</div>
+          <div class="risk-mit-item">If you feel heavy eyes at any point — PULL OVER. Even 15 min sleep in a petrol station is fine.</div>
+          <div class="risk-mit-item">Coffee only at Thrissur departure, not before sleep. Don't mask tiredness with caffeine on ghat.</div>
+          <div class="risk-mit-item">Deva should watch for Kabi's micro-sleep signs: wandering lane, slow reaction at curves.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="risk-card">
+      <div class="risk-card-header">
+        <div class="risk-level-bar high"></div>
+        <div class="risk-icon">🌫️</div>
+        <div class="risk-info">
+          <div class="risk-name">Fog + Zero Visibility</div>
+          <span class="risk-level-tag high">🚨 HIGH</span>
+        </div>
+      </div>
+      <div class="risk-body">
+        <div class="risk-when">📅 Day 1 · 03:00–07:00 · Ghat approach and ghat section</div>
+        <div class="risk-mitigation">
+          <div class="risk-mit-item">Reduce speed immediately when fog appears. 20 km/h on ghat if visibility &lt; 30m.</div>
+          <div class="risk-mit-item">Use low-beam in fog (high-beam reflects off fog and blinds you further).</div>
+          <div class="risk-mit-item">Horn at every blind curve — one long honk.</div>
+          <div class="risk-mit-item">Pull over and wait if fog is extremely dense. There is no shame in stopping.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="risk-card">
+      <div class="risk-card-header">
+        <div class="risk-level-bar high"></div>
+        <div class="risk-icon">🌧️</div>
+        <div class="risk-info">
+          <div class="risk-name">Wet &amp; Slippery Roads</div>
+          <span class="risk-level-tag high">🚨 HIGH</span>
+        </div>
+      </div>
+      <div class="risk-body">
+        <div class="risk-when">📅 All days · Ghat section most critical · July = peak monsoon</div>
+        <div class="risk-mitigation">
+          <div class="risk-mit-item">Sintered brake pads fitted before trip (already in bike checklist).</div>
+          <div class="risk-mit-item">On wet road: brake earlier, slower entry speed on corners, no hard throttle mid-corner.</div>
+          <div class="risk-mit-item">Rain gear must be accessible — not buried in saddle bag. Keep it in the top box or jacket.</div>
+          <div class="risk-mit-item">Avoid painted road markings and metal surfaces — extremely slippery when wet.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="risk-card">
+      <div class="risk-card-header">
+        <div class="risk-level-bar medium"></div>
+        <div class="risk-icon">⏰</div>
+        <div class="risk-info">
+          <div class="risk-name">Timeline Overrun</div>
+          <span class="risk-level-tag medium">⚠️ MEDIUM</span>
+        </div>
+      </div>
+      <div class="risk-body">
+        <div class="risk-when">📅 Day 1 afternoon · Activities may run beyond plan</div>
+        <div class="risk-mitigation">
+          <div class="risk-mit-item">Hard rule: start return ride Day 2 before 12:00. No exceptions.</div>
+          <div class="risk-mit-item">If Day 1 activities overrun → skip Pine Forest, prioritize rest for Day 2 trek.</div>
+          <div class="risk-mit-item">Day 2 return: if delayed past 14:00 departure → consider overnight stay rather than night riding home.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="risk-card">
+      <div class="risk-card-header">
+        <div class="risk-level-bar medium"></div>
+        <div class="risk-icon">🔧</div>
+        <div class="risk-info">
+          <div class="risk-name">Mechanical Failure</div>
+          <span class="risk-level-tag medium">⚠️ MEDIUM</span>
+        </div>
+      </div>
+      <div class="risk-body">
+        <div class="risk-when">📅 Any time · Ghat section = no roadside help · 40km no mobile signal</div>
+        <div class="risk-mitigation">
+          <div class="risk-mit-item">Complete bike checklist 100% before departure. Non-negotiable.</div>
+          <div class="risk-mit-item">Carry: puncture kit, mini air pump, basic toolkit, tow rope.</div>
+          <div class="risk-mit-item">Emergency contact knows route + ETAs. They call you if no check-in by checkpoint time.</div>
+          <div class="risk-mit-item">Nearest mechanic: Thodupuzha town (before ghat entry).</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<div id="footer-bar">
+  <div class="footer-inner">
+    <div class="footer-checklist-summary" id="footer-summary">Load checklists…</div>
+    <button onclick="showTab('live')" style="font-family:var(--fm);font-size:10px;background:var(--green);color:#000;border:none;padding:8px 14px;border-radius:5px;cursor:pointer;letter-spacing:0.5px;white-space:nowrap" id="footer-live-btn">🔴 LIVE</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════
+
+const BIKE_CHECKLIST = [
+  { cat: 'ENGINE', items: [
+    { id: 'bc1',  text: 'Engine oil — 10W30/10W40 fully synthetic (Motul / Castrol)', must: true },
+    { id: 'bc2',  text: 'Oil filter — replace', must: true },
+    { id: 'bc3',  text: 'Spark plug — replace (NGK recommended)', must: true },
+    { id: 'bc4',  text: 'Air filter — clean or replace', must: false },
+  ]},
+  { cat: 'BRAKES', items: [
+    { id: 'bc5',  text: 'Brake pads — upgrade to sintered (CRITICAL for wet)', must: true },
+    { id: 'bc6',  text: 'Brake fluid — DOT 4, topped up', must: true },
+  ]},
+  { cat: 'CHAIN & SUSPENSION', items: [
+    { id: 'bc7',  text: 'Chain — clean, lube, adjust slack', must: true },
+    { id: 'bc8',  text: 'Suspension — increase preload 1–2 steps (pillion + luggage)', must: false },
+  ]},
+  { cat: 'TYRES', items: [
+    { id: 'bc9',  text: 'Tyre pressure — front & rear set correctly', must: true },
+    { id: 'bc10', text: 'Tyre tread depth — check for adequate grip', must: true },
+  ]},
+  { cat: 'ELECTRICAL', items: [
+    { id: 'bc11', text: 'Headlight — both beam levels working', must: true },
+    { id: 'bc12', text: 'Tail light + brake light — functioning', must: true },
+  ]},
+  { cat: 'ACCESSORIES & COMFORT', items: [
+    { id: 'bc13', text: 'Phone mount with vibration damper', must: false },
+    { id: 'bc14', text: 'Luggage rack / saddle stay installed + load tested', must: true },
+    { id: 'bc15', text: 'Gel seat cushion for long rides', must: false },
+  ]},
+]
+
+const RIDER_CHECKLIST = [
+  { cat: 'SAFETY GEAR — MANDATORY', items: [
+    { id: 'rc1', text: 'Helmet — ISI / ECE certified (both riders)', must: true },
+    { id: 'rc2', text: 'Gloves — full hand + knuckle protection (both)', must: true },
+    { id: 'rc3', text: 'Jacket — with shoulder + elbow armor (both)', must: true },
+    { id: 'rc4', text: 'Shoes — ankle protection (no sandals)', must: true },
+    { id: 'rc5', text: 'Rain gear — poncho or jacket, accessible (CRITICAL)', must: true },
+  ]},
+  { cat: 'HEALTH & NUTRITION', items: [
+    { id: 'rc6', text: 'Water bottles (min 1L each) + electrolytes', must: true },
+    { id: 'rc7', text: 'Energy snacks / dry food in tank bag', must: false },
+  ]},
+  { cat: 'DOCUMENTS', items: [
+    { id: 'rc8', text: 'RC (Registration Certificate) — physical copy', must: true },
+    { id: 'rc9', text: 'DL (Driving Licence) — physical copy', must: true },
+    { id: 'rc10', text: 'Bike Insurance — physical copy or digital', must: true },
+  ]},
+  { cat: 'TOOLS & EMERGENCY', items: [
+    { id: 'rc11', text: 'Puncture kit + tyre plugs', must: true },
+    { id: 'rc12', text: 'Mini air pump (electric or hand)', must: true },
+    { id: 'rc13', text: 'Power bank + charging cables', must: false },
+    { id: 'rc14', text: 'Torch / headlamp', must: false },
+  ]},
+]
+
+// Timeline blocks with metadata for live tracking (cumulative minutes from Day0 18:00)
+const TRIP_BLOCKS = [
+  { id: 'block-dep',       name: 'Office Departure',           start: 0,    dur: 90,  day: 0 },
+  { id: 'block-pkd',       name: 'Palakkad Fuel Stop',         start: 90,   dur: 15,  day: 0 },
+  { id: 'block-pkd-tsr',   name: 'Palakkad → Thrissur',        start: 105,  dur: 75,  day: 0 },
+  { id: 'block-tsr-hotel', name: 'Thrissur Check-in',          start: 180,  dur: 30,  day: 0 },
+  { id: 'block-sleep-d0',  name: 'Sleep (Thrissur)',           start: 210,  dur: 240, day: 0 },
+  { id: 'block-wakeup',    name: 'Wake Up + Bike Check',       start: 450,  dur: 60,  day: 1 },
+  { id: 'block-night-ride',name: 'Night Ride to Thodupuzha',  start: 510,  dur: 180, day: 1 },
+  { id: 'block-tdp-fuel',  name: 'Thodupuzha Fuel (CRITICAL)',start: 690,  dur: 10,  day: 1 },
+  { id: 'block-ghat',      name: 'Ghat Section to Vagamon',   start: 700,  dur: 90,  day: 1 },
+  { id: 'block-arrival',   name: '🏔️ VAGAMON ARRIVAL',         start: 790,  dur: 5,   day: 1 },
+  { id: 'block-breakfast', name: 'Breakfast',                  start: 795,  dur: 45,  day: 1 },
+  { id: 'block-meadows',   name: 'Vagamon Meadows',            start: 840,  dur: 30,  day: 1 },
+  { id: 'block-advpark',   name: 'Adventure Park',             start: 870,  dur: 90,  day: 1 },
+  { id: 'block-checkin',   name: 'Hotel + Rest',               start: 990,  dur: 90,  day: 1 },
+  { id: 'block-pine',      name: 'Pine Forest',                start: 1080, dur: 150, day: 1 },
+  { id: 'block-dinner-d1', name: 'Dinner + Sleep',             start: 1230, dur: 420, day: 1 },
+  { id: 'block-d2-wake',   name: 'Wake + Trek Prep',           start: 1650, dur: 60,  day: 2 },
+  { id: 'block-trek-up',   name: 'Kurisumala Ascent',          start: 1710, dur: 90,  day: 2 },
+  { id: 'block-summit',    name: '🏔️ SUMMIT',                  start: 1800, dur: 30,  day: 2 },
+  { id: 'block-trek-down', name: 'Trek Descent',               start: 1830, dur: 90,  day: 2 },
+  { id: 'block-pack',      name: 'Pack + Check Out',           start: 1920, dur: 90,  day: 2 },
+  { id: 'block-return',    name: 'Return Ride Home',           start: 2010, dur: 420, day: 2 },
+]
+
+const TOTAL_TRIP_MIN = 2430 // 40.5 hours
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+
+const clState = JSON.parse(localStorage.getItem('vagamon_cl') || '{}')
+const blockDone = JSON.parse(localStorage.getItem('vagamon_blocks') || '{}')
+let tripStartTS = parseInt(localStorage.getItem('vagamon_start') || '0')
+let liveTimer = null
+
+function saveState() {
+  localStorage.setItem('vagamon_cl', JSON.stringify(clState))
+  localStorage.setItem('vagamon_blocks', JSON.stringify(blockDone))
+  if (tripStartTS) localStorage.setItem('vagamon_start', String(tripStartTS))
+}
+
+// ══════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════
+
+function showTab(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'))
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
+  document.getElementById('view-' + id).classList.add('active')
+  const tabs = document.querySelectorAll('.tab-btn')
+  const map = { overview: 0, timeline: 1, checklists: 2, live: 3, risks: 4 }
+  if (tabs[map[id]]) tabs[map[id]].classList.add('active')
+  if (id === 'live') renderLive()
+}
+
+// ══════════════════════════════════════════════
+// CHECKLISTS
+// ══════════════════════════════════════════════
+
+function renderChecklist(data, containerId, color) {
+  const el = document.getElementById(containerId)
+  let html = ''
+  for (const cat of data) {
+    html += `<div class="cl-category">
+      <span class="cl-cat-label">${cat.cat}</span>`
+    for (const item of cat.items) {
+      const done = !!clState[item.id]
+      html += `<div class="cl-item ${done?'checked':''}" onclick="toggleCl('${item.id}')">
+        <div class="cl-check"></div>
+        <span class="cl-text">${item.text}</span>
+        <span class="cl-mandatory ${item.must?'must':'opt'}">${item.must?'MUST':'OPT'}</span>
+      </div>`
+    }
+    html += `</div>`
+  }
+  el.innerHTML = html
+  updateChecklistProgress()
+}
+
+function toggleCl(id) {
+  clState[id] = !clState[id]
+  saveState()
+  const el = document.querySelector(`.cl-item[onclick*="'${id}'"]`)
+  if (el) el.classList.toggle('checked', !!clState[id])
+  updateChecklistProgress()
+}
+
+function updateChecklistProgress() {
+  const bikeItems = BIKE_CHECKLIST.flatMap(c => c.items)
+  const riderItems = RIDER_CHECKLIST.flatMap(c => c.items)
+  const bikeDone = bikeItems.filter(i => clState[i.id]).length
+  const riderDone = riderItems.filter(i => clState[i.id]).length
+  const bikeTotal = bikeItems.length
+  const riderTotal = riderItems.length
+
+  const circumf = 213.6
+  const bikeRing = document.getElementById('bike-ring')
+  const riderRing = document.getElementById('rider-ring')
+  if (bikeRing) bikeRing.style.strokeDashoffset = circumf - (circumf * bikeDone / bikeTotal)
+  if (riderRing) riderRing.style.strokeDashoffset = circumf - (circumf * riderDone / riderTotal)
+
+  const bpct = Math.round(bikeDone / bikeTotal * 100)
+  const rpct = Math.round(riderDone / riderTotal * 100)
+  const bRingText = document.getElementById('bike-ring-pct')
+  const rRingText = document.getElementById('rider-ring-pct')
+  if (bRingText) bRingText.textContent = bpct + '%'
+  if (rRingText) rRingText.textContent = rpct + '%'
+
+  const bProg = document.getElementById('bike-progress-text')
+  const rProg = document.getElementById('rider-progress-text')
+  if (bProg) bProg.textContent = `${bikeDone} / ${bikeTotal} done`
+  if (rProg) rProg.textContent = `${riderDone} / ${riderTotal} done`
+
+  const summary = document.getElementById('footer-summary')
+  const totalDone = bikeDone + riderDone
+  const totalItems = bikeTotal + riderTotal
+  const mustBike = bikeItems.filter(i => i.must && !clState[i.id]).length
+  const mustRider = riderItems.filter(i => i.must && !clState[i.id]).length
+  const mustPending = mustBike + mustRider
+  if (summary) {
+    if (mustPending > 0)
+      summary.innerHTML = `<strong style="color:var(--red)">${mustPending} MUST items pending</strong> · ${totalDone}/${totalItems} total done`
+    else
+      summary.innerHTML = `<strong>${totalDone}/${totalItems}</strong> checked · <strong style="color:var(--green)">All MUST items ✓</strong>`
+  }
+}
+
+// ══════════════════════════════════════════════
+// LIVE TRACKING
+// ══════════════════════════════════════════════
+
+function startTrip() {
+  tripStartTS = Date.now()
+  localStorage.setItem('vagamon_start', String(tripStartTS))
+  document.getElementById('live-indicator').classList.add('active')
+  renderLive()
+  startLiveTimer()
+}
+
+function resetTrip() {
+  if (!confirm('Reset live tracking? This will clear your trip start time.')) return
+  tripStartTS = 0
+  localStorage.removeItem('vagamon_start')
+  clearInterval(liveTimer)
+  document.getElementById('live-indicator').classList.remove('active')
+  renderLive()
+}
+
+function startLiveTimer() {
+  clearInterval(liveTimer)
+  liveTimer = setInterval(() => {
+    if (!tripStartTS) { clearInterval(liveTimer); return }
+    updateLiveDisplay()
+  }, 10000) // every 10s (battery friendly)
+  updateLiveDisplay()
+}
+
+function getCurrentBlock() {
+  if (!tripStartTS) return null
+  const elapsedMin = (Date.now() - tripStartTS) / 60000
+  for (let i = 0; i < TRIP_BLOCKS.length; i++) {
+    const b = TRIP_BLOCKS[i]
+    if (elapsedMin >= b.start && elapsedMin < b.start + b.dur) {
+      return { block: b, minIntoBlock: elapsedMin - b.start, blockIndex: i }
+    }
+  }
+  if ((Date.now() - tripStartTS) / 60000 >= TOTAL_TRIP_MIN) return { done: true }
+  return null
+}
+
+function formatDuration(mins) {
+  const h = Math.floor(Math.abs(mins) / 60)
+  const m = Math.floor(Math.abs(mins) % 60)
+  return (mins < 0 ? '-' : '') + (h > 0 ? `${h}h ` : '') + `${m}m`
+}
+
+function formatElapsed(ms) {
+  const totalMin = Math.floor(ms / 60000)
+  const h = Math.floor(totalMin / 60)
+  const m = totalMin % 60
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`
+}
+
+function nowTime() {
+  const now = new Date()
+  return `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`
+}
+
+function renderLive() {
+  const content = document.getElementById('live-content')
+  if (!tripStartTS) {
+    content.innerHTML = `<div class="live-idle">
+      <div class="live-idle-icon">🏍️</div>
+      <div class="live-idle-title">READY TO RIDE</div>
+      <div class="live-idle-sub">Tap START when you depart office on Day 0.<br/>The tracker will follow you through all 3 days.<br/>Works even if you close the app — it remembers your start time.</div>
+      <button class="start-btn" onclick="startTrip()">🚀 START TRIP</button>
+    </div>`
+    return
+  }
+
+  if ((Date.now() - tripStartTS) / 60000 >= TOTAL_TRIP_MIN) {
+    content.innerHTML = `<div class="live-idle" style="padding-top:60px">
+      <div class="live-idle-icon">🏠</div>
+      <div class="live-idle-title">TRIP COMPLETE!</div>
+      <div class="live-idle-sub">You made it home. Well ridden 🏍️❤️</div>
+      <button class="stop-btn" onclick="resetTrip()">■ RESET FOR NEXT TRIP</button>
+    </div>`
+    return
+  }
+
+  document.getElementById('live-indicator').classList.add('active')
+  updateLiveDisplay()
+}
+
+function updateLiveDisplay() {
+  if (!tripStartTS) return
+  const current = getCurrentBlock()
+  if (!current) return
+  if (current.done) { renderLive(); return }
+
+  const elapsed = Date.now() - tripStartTS
+  const elapsedMin = elapsed / 60000
+  const { block, minIntoBlock, blockIndex } = current
+
+  // Next checkpoint
+  const nextBlock = TRIP_BLOCKS[blockIndex + 1]
+  const minToNext = nextBlock ? (block.start + block.dur - elapsedMin) : 0
+
+  // Delay (planned minus actual elapsed — rough indicator)
+  const plannedElapsed = block.start + minIntoBlock
+  const delayMin = Math.round(elapsedMin - plannedElapsed) // always 0 in this model, but available for manual marking
+
+  // Progress % through entire trip
+  const tripPct = Math.min(100, Math.round((elapsedMin / TOTAL_TRIP_MIN) * 100))
+
+  // Alerts
+  const alerts = []
+  if (block.id === 'block-night-ride' || block.id === 'block-ghat') {
+    alerts.push({ type: 'danger', msg: '🚨 HIGH RISK SEGMENT — Reduce speed. Stay alert. Take breaks.' })
+  }
+  if (block.id === 'block-sleep-d0' && minIntoBlock < 240) {
+    const sleepLeft = Math.round(240 - minIntoBlock)
+    alerts.push({ type: 'info', msg: `😴 Sleep remaining: ~${formatDuration(sleepLeft)} · Do not wake early` })
+  }
+  if (blockIndex > 5 && minToNext < 15 && nextBlock) {
+    alerts.push({ type: 'warn', msg: `⏰ Next: ${nextBlock.name} in ${Math.round(minToNext)} min` })
+  }
+
+  const content = document.getElementById('live-content')
+  content.innerHTML = `<div class="live-active pw">
+    <div style="height:16px"></div>
+
+    <div style="text-align:center;margin-bottom:12px">
+      <div style="font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:4px">CURRENT TIME</div>
+      <div class="live-clock">${nowTime()}</div>
+      <div class="live-elapsed">Trip elapsed: <strong style="color:var(--green)">${formatElapsed(elapsed)}</strong></div>
+    </div>
+
+    <div class="live-phase-card">
+      <div class="live-phase-label">CURRENT PHASE</div>
+      <div class="live-phase-name">${block.name}</div>
+      <div class="live-phase-time">${Math.round(minIntoBlock)} min in · ${Math.round(block.dur - minIntoBlock)} min remaining</div>
+    </div>
+
+    <div class="live-stats">
+      <div class="live-stat-card">
+        <div class="live-stat-val green">${tripPct}%</div>
+        <div class="live-stat-lbl">TRIP PROGRESS</div>
+      </div>
+      <div class="live-stat-card">
+        <div class="live-stat-val blue">DAY ${block.day}</div>
+        <div class="live-stat-lbl">CURRENT DAY</div>
+      </div>
+      <div class="live-stat-card">
+        <div class="live-stat-val amber">${nextBlock ? Math.round(minToNext) + 'm' : '—'}</div>
+        <div class="live-stat-lbl">TO NEXT PHASE</div>
+      </div>
+      <div class="live-stat-card">
+        <div class="live-stat-val">${blockIndex + 1}/${TRIP_BLOCKS.length}</div>
+        <div class="live-stat-lbl">PHASE</div>
+      </div>
+    </div>
+
+    ${nextBlock ? `<div class="next-cp-card">
+      <div class="next-cp-label">NEXT PHASE</div>
+      <div class="next-cp-name">${nextBlock.name}</div>
+      <div class="next-cp-eta">In ~${formatDuration(minToNext)}</div>
+    </div>` : ''}
+
+    ${alerts.map(a => `<div class="alert-card ${a.type}">${a.msg}</div>`).join('')}
+
+    <button class="mark-done-btn" onclick="markCurrentDone()">✓ MARK THIS PHASE DONE — MOVE ON</button>
+    <br/><br/>
+    <button class="stop-btn" onclick="resetTrip()">■ RESET TRACKER</button>
+    <div style="height:20px"></div>
+  </div>`
+}
+
+function markCurrentDone() {
+  // Fast-forward: advance the trip start time so we skip to the next block
+  const current = getCurrentBlock()
+  if (!current || current.done) return
+  const { block } = current
+  const skipMs = (block.start + block.dur) * 60000
+  const newStart = Date.now() - skipMs
+  tripStartTS = newStart
+  localStorage.setItem('vagamon_start', String(tripStartTS))
+  updateLiveDisplay()
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+
+window.addEventListener('focus', () => { if (tripStartTS) updateLiveDisplay() })
+
+renderChecklist(BIKE_CHECKLIST, 'bike-checklist', 'green')
+renderChecklist(RIDER_CHECKLIST, 'rider-checklist', 'blue')
+updateChecklistProgress()
+
+if (tripStartTS) {
+  document.getElementById('live-indicator').classList.add('active')
+  startLiveTimer()
+}
+</script>
+</body>
+</html>

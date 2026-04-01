@@ -494,6 +494,7 @@ async function renderHome() {
         <div class="confirmed-sub">${esc(confirmed.subtitle || '')} · ${confirmed.distance_km} km · ${esc(confirmed.duration_hrs || '')}</div>
       </div>
       <button class="btn-open" onclick="openDest(${confirmed.id})">OPEN PLAN →</button>
+      <a class="btn-open" href="/trip.html" style="text-decoration:none;background:var(--amber);color:#000;">🏍️ TRIP TRACKER</a>
     </div></div>`;
   }
 
