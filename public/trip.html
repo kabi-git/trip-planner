@@ -321,6 +321,27 @@ body { background: var(--bg); color: var(--text); font-family: var(--fb); min-he
 .footer-checklist-summary { font-family: var(--fm); font-size: 11px; color: var(--muted2); flex: 1; }
 .footer-checklist-summary strong { color: var(--green); }
 
+/* ── COUNTDOWN ── */
+.countdown-wrap {
+  margin-top: 20px; display: inline-flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.countdown-label { font-family: var(--fm); font-size: 9px; color: var(--muted2); letter-spacing: 3px; text-transform: uppercase; }
+.countdown-units { display: flex; gap: 8px; align-items: flex-end; }
+.cd-unit { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.cd-num {
+  font-family: var(--fh); font-size: clamp(26px, 7vw, 42px); letter-spacing: 2px; line-height: 1;
+  color: var(--green); min-width: 52px; text-align: center;
+  background: rgba(68,255,136,0.06); border: 1px solid rgba(68,255,136,0.15);
+  border-radius: 8px; padding: 6px 4px; transition: color 0.3s;
+}
+.cd-lbl { font-family: var(--fm); font-size: 8px; color: var(--muted); letter-spacing: 1.5px; }
+.cd-sep { font-family: var(--fh); font-size: 26px; color: var(--muted); margin-bottom: 18px; line-height: 1; }
+.countdown-date { font-family: var(--fm); font-size: 10px; color: var(--amber); letter-spacing: 1.5px; margin-top: 2px; }
+.countdown-wrap.done .cd-num { color: var(--amber); border-color: rgba(255,204,68,0.3); background: rgba(255,204,68,0.06); }
+.countdown-wrap.done .countdown-label::after { content: ' — IT\'S TIME! 🏍️'; color: var(--amber); }
+@keyframes cd-tick { 0%,100%{transform:scale(1)} 50%{transform:scale(1.07)} }
+.cd-num.tick { animation: cd-tick 0.2s ease; }
+
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -583,6 +604,20 @@ body { background: var(--bg); color: var(--text); font-family: var(--fb); min-he
         <span class="hero-badge night">🌙 2 NIGHT RIDES</span>
         <span class="hero-badge mon">🌧️ MONSOON</span>
         <span class="hero-badge risk">⚠️ HIGH RISK</span>
+      </div>
+
+      <div class="countdown-wrap" id="countdown-wrap">
+        <div class="countdown-label">🏍️ departure in</div>
+        <div class="countdown-units">
+          <div class="cd-unit"><div class="cd-num" id="cd-days">--</div><div class="cd-lbl">DAYS</div></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-unit"><div class="cd-num" id="cd-hrs">--</div><div class="cd-lbl">HRS</div></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-unit"><div class="cd-num" id="cd-min">--</div><div class="cd-lbl">MIN</div></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-unit"><div class="cd-num" id="cd-sec">--</div><div class="cd-lbl">SEC</div></div>
+        </div>
+        <div class="countdown-date">02 JULY 2026 · 18:00 · ONDIPUDUR</div>
       </div>
     </div>
   </div>
@@ -1802,6 +1837,42 @@ window.addEventListener('focus', () => { if (tripStartTS) updateLiveDisplay() })
 renderChecklist(BIKE_CHECKLIST, 'bike-checklist', 'green')
 renderChecklist(RIDER_CHECKLIST, 'rider-checklist', 'blue')
 updateChecklistProgress()
+
+// ── Countdown ──
+;(function() {
+  const TARGET = new Date('2026-07-02T18:00:00+05:30').getTime()
+  const prev = {}
+  function pad(n) { return String(n).padStart(2,'0') }
+  function tick() {
+    const diff = TARGET - Date.now()
+    const wrap = document.getElementById('countdown-wrap')
+    if (diff <= 0) {
+      ['days','hrs','min','sec'].forEach(k => { const el = document.getElementById('cd-'+k); if(el) el.textContent='00' })
+      if (wrap) wrap.classList.add('done')
+      return
+    }
+    const vals = {
+      days: Math.floor(diff / 86400000),
+      hrs:  Math.floor((diff % 86400000) / 3600000),
+      min:  Math.floor((diff % 3600000)  / 60000),
+      sec:  Math.floor((diff % 60000)    / 1000),
+    }
+    for (const [k, num] of Object.entries(vals)) {
+      const el = document.getElementById('cd-' + k)
+      if (!el) continue
+      const s = k === 'days' ? String(num) : pad(num)
+      if (s !== prev[k]) {
+        el.textContent = s
+        el.classList.remove('tick')
+        void el.offsetWidth
+        el.classList.add('tick')
+        prev[k] = s
+      }
+    }
+  }
+  tick()
+  setInterval(tick, 1000)
+})()
 
 initRain()
 setTimeout(triggerStatCountUp, 300)
