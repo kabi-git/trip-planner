@@ -332,6 +332,148 @@ body { background: var(--bg); color: var(--text); font-family: var(--fb); min-he
   .view { display: block !important; }
   body { background: #fff; color: #000; }
 }
+
+/* ════ ANIMATIONS ════ */
+@keyframes rain-drop {
+  0%   { transform: translateY(-40px) translateX(0);  opacity: 0; }
+  5%   { opacity: 0.55; }
+  95%  { opacity: 0.3; }
+  100% { transform: translateY(260px) translateX(10px); opacity: 0; }
+}
+@keyframes draw-path {
+  from { stroke-dashoffset: var(--dash-len, 800); }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes bike-run {
+  0%   { offset-distance: 0%; }
+  100% { offset-distance: 100%; }
+}
+@keyframes float-up {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-6px); }
+}
+@keyframes hero-pulse {
+  0%,100% { opacity: 0.7; }
+  50%     { opacity: 1; }
+}
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+@keyframes count-up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes fade-slide-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+@keyframes glow-pulse {
+  0%,100% { box-shadow: 0 0 8px rgba(68,255,136,0.2); }
+  50%     { box-shadow: 0 0 24px rgba(68,255,136,0.6), 0 0 48px rgba(68,255,136,0.15); }
+}
+@keyframes fog-drift {
+  0%   { transform: translateX(-40px); opacity: 0; }
+  20%  { opacity: 0.18; }
+  80%  { opacity: 0.12; }
+  100% { transform: translateX(80px); opacity: 0; }
+}
+@keyframes elev-fill {
+  from { opacity: 0; transform: scaleY(0); transform-origin: bottom; }
+  to   { opacity: 1; transform: scaleY(1); transform-origin: bottom; }
+}
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+@keyframes star-twinkle {
+  0%,100% { opacity: 0.2; } 50% { opacity: 1; }
+}
+
+/* ── HERO ENHANCEMENTS ── */
+.hero-banner {
+  position: relative; overflow: hidden;
+}
+.hero-bg-canvas {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+}
+.hero-content { position: relative; z-index: 2; }
+.hero-mountain {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 1; pointer-events: none;
+}
+.hero-bike-svg {
+  display: block; margin: 0 auto 8px;
+  animation: float-up 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 12px rgba(68,255,136,0.5));
+}
+.hero-title {
+  text-shadow: 0 0 40px rgba(68,255,136,0.3);
+  animation: hero-pulse 4s ease-in-out infinite;
+}
+.hero-badge-row {
+  display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;
+  margin-top: 14px;
+}
+.hero-badge {
+  font-family: var(--fm); font-size: 10px; padding: 5px 12px; border-radius: 20px;
+  letter-spacing: 0.5px; border: 1px solid;
+}
+.hero-badge.night  { background: rgba(187,136,255,0.1); color: var(--purple); border-color: rgba(187,136,255,0.3); }
+.hero-badge.dist   { background: rgba(68,170,255,0.1);  color: var(--blue);   border-color: rgba(68,170,255,0.3); }
+.hero-badge.risk   { background: rgba(255,68,85,0.1);   color: var(--red);    border-color: rgba(255,68,85,0.3); }
+.hero-badge.mon    { background: rgba(68,255,136,0.08); color: var(--green);  border-color: rgba(68,255,136,0.25); }
+
+/* ── ROUTE ANIMATED PATH ── */
+.route-anim-path {
+  fill: none;
+  stroke-dasharray: var(--dash-len, 800);
+  stroke-dashoffset: var(--dash-len, 800);
+  animation: draw-path 2.2s cubic-bezier(.4,0,.2,1) forwards;
+}
+.route-anim-path.p1 { --dash-len: 160; animation-delay: 0.1s; }
+.route-anim-path.p2 { --dash-len: 130; animation-delay: 0.7s; }
+.route-anim-path.p3 { --dash-len: 280; animation-delay: 1.2s; }
+.route-anim-path.p4 { --dash-len: 200; animation-delay: 1.9s; }
+.bike-dot { animation: hero-pulse 1.5s ease-in-out infinite; }
+
+/* ── ELEVATION PROFILE ── */
+.elev-wrap {
+  background: var(--s1); border: 1px solid var(--b2); border-radius: var(--r);
+  padding: 16px 12px 8px; overflow-x: auto;
+}
+.elev-wrap svg { min-width: 500px; }
+.elev-area { animation: elev-fill 1.4s ease forwards 0.3s; opacity: 0; }
+.elev-line { stroke-dasharray: 900; stroke-dashoffset: 900; animation: draw-path 2s ease forwards 0.5s; --dash-len: 900; }
+
+/* ── STAT CARDS ── */
+.stat-card {
+  animation: fade-slide-in 0.5s ease both;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+.stat-card:nth-child(1) { animation-delay: 0.05s; }
+.stat-card:nth-child(2) { animation-delay: 0.12s; }
+.stat-card:nth-child(3) { animation-delay: 0.19s; }
+.stat-card:nth-child(4) { animation-delay: 0.26s; }
+
+/* ── DAY HEADER GLOW ── */
+.day-header.day0 { animation: fade-slide-in 0.5s ease both; }
+.day-header.day1 { animation: fade-slide-in 0.5s ease both 0.1s; }
+.day-header.day2 { animation: fade-slide-in 0.5s ease both 0.2s; }
+
+/* ── BLOCK ENTRANCE ── */
+.tl-block { animation: fade-slide-in 0.4s ease both; }
+.tl-block.active { animation: glow-pulse 2s ease-in-out infinite; }
+
+/* ── FOG LAYER (on night blocks) ── */
+.fog-layer {
+  position: absolute; inset: 0; border-radius: inherit; pointer-events: none; overflow: hidden; z-index: 0;
+}
+.fog-puff {
+  position: absolute; border-radius: 50%;
+  background: rgba(187,136,255,0.06);
+  width: 200px; height: 80px; filter: blur(20px);
+  animation: fog-drift linear infinite;
+}
+
+/* ── CHECKLIST RING ANIMATION ── */
+.ring-track { transition: stroke-dashoffset 0.7s cubic-bezier(.4,0,.2,1); }
+.cl-item { animation: fade-slide-in 0.3s ease both; }
+
+/* ── RISK CARD ENHANCED ── */
+.risk-card { animation: fade-slide-in 0.4s ease both; transition: transform 0.2s; }
+.risk-card:hover { transform: translateX(4px); }
 </style>
 </head>
 <body>
@@ -356,10 +498,93 @@ body { background: var(--bg); color: var(--text); font-family: var(--fb); min-he
 <!-- ═══ OVERVIEW ═══ -->
 <div id="view-overview" class="view active">
   <div class="hero-banner">
-    <span class="hero-emoji">🏍️</span>
-    <div class="hero-title">VAGAMON <span>MONSOON</span> RIDE</div>
-    <div class="hero-sub">KABI &amp; DEVA · PULSAR N150</div>
-    <div class="hero-date">02 – 04 JULY 2026</div>
+    <!-- Rain canvas -->
+    <canvas id="rain-canvas" class="hero-bg-canvas"></canvas>
+
+    <!-- Mountain silhouette SVG -->
+    <svg class="hero-mountain" viewBox="0 0 780 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="120">
+      <defs>
+        <linearGradient id="mtn-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1a3d1a" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#080a08" stop-opacity="0.7"/>
+        </linearGradient>
+        <linearGradient id="mtn-grad2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0a1e0a" stop-opacity="0.95"/>
+          <stop offset="100%" stop-color="#080a08" stop-opacity="0.8"/>
+        </linearGradient>
+      </defs>
+      <!-- Back range -->
+      <path d="M0 120 L0 85 L50 60 L110 75 L170 40 L230 65 L280 30 L340 55 L400 25 L450 50 L500 35 L560 60 L620 42 L680 68 L730 50 L780 70 L780 120 Z" fill="url(#mtn-grad2)" opacity="0.6"/>
+      <!-- Front range -->
+      <path d="M0 120 L0 95 L60 80 L120 90 L190 65 L260 85 L330 55 L390 72 L460 50 L530 70 L600 48 L650 68 L700 58 L750 75 L780 65 L780 120 Z" fill="url(#mtn-grad)"/>
+      <!-- Forest silhouette dots -->
+      <g fill="#1a3d1a" opacity="0.7">
+        <path d="M60 95 L65 80 L70 95Z"/>
+        <path d="M72 95 L78 78 L84 95Z"/>
+        <path d="M86 95 L92 82 L98 95Z"/>
+        <path d="M200 85 L206 68 L212 85Z"/>
+        <path d="M215 85 L221 72 L227 85Z"/>
+        <path d="M650 75 L656 58 L662 75Z"/>
+        <path d="M665 75 L671 62 L677 75Z"/>
+        <path d="M680 75 L686 65 L692 75Z"/>
+      </g>
+      <!-- Mist line -->
+      <rect x="0" y="112" width="780" height="8" fill="rgba(68,255,136,0.03)"/>
+    </svg>
+
+    <div class="hero-content" style="padding-bottom:60px">
+      <!-- Animated bike SVG -->
+      <svg class="hero-bike-svg" width="90" height="48" viewBox="0 0 90 48" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="bike-glow">
+            <feGaussianBlur stdDeviation="2.5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <g filter="url(#bike-glow)" stroke="#44ff88" stroke-width="2" fill="none">
+          <!-- Wheels -->
+          <circle cx="18" cy="34" r="12" stroke="#44ff88" stroke-width="2.5"/>
+          <circle cx="72" cy="34" r="12" stroke="#44ff88" stroke-width="2.5"/>
+          <!-- Spokes -->
+          <line x1="18" y1="22" x2="18" y2="46" stroke="rgba(68,255,136,0.3)" stroke-width="1"/>
+          <line x1="6" y1="34" x2="30" y2="34" stroke="rgba(68,255,136,0.3)" stroke-width="1"/>
+          <line x1="60" y1="34" x2="84" y2="34" stroke="rgba(68,255,136,0.3)" stroke-width="1"/>
+          <line x1="72" y1="22" x2="72" y2="46" stroke="rgba(68,255,136,0.3)" stroke-width="1"/>
+          <!-- Frame -->
+          <line x1="30" y1="34" x2="45" y2="16" stroke="#44ff88" stroke-width="2.5"/>
+          <line x1="45" y1="16" x2="60" y2="34" stroke="#44ff88" stroke-width="2.5"/>
+          <line x1="30" y1="34" x2="55" y2="26" stroke="#44ff88" stroke-width="2"/>
+          <line x1="55" y1="26" x2="60" y2="34" stroke="#44ff88" stroke-width="2"/>
+          <!-- Seat -->
+          <line x1="40" y1="18" x2="56" y2="18" stroke="#44ff88" stroke-width="3" stroke-linecap="round"/>
+          <!-- Handle -->
+          <line x1="58" y1="17" x2="68" y2="10" stroke="#44ff88" stroke-width="2.5"/>
+          <line x1="65" y1="8" x2="72" y2="12" stroke="#44ff88" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- Headlight glow -->
+          <circle cx="74" cy="27" r="4" fill="rgba(255,220,100,0.3)" stroke="#ffcc44" stroke-width="1.5"/>
+          <line x1="78" y1="25" x2="88" y2="20" stroke="#ffcc44" stroke-width="1" opacity="0.7"/>
+          <line x1="78" y1="27" x2="90" y2="27" stroke="#ffcc44" stroke-width="1" opacity="0.5"/>
+          <!-- Engine -->
+          <rect x="38" y="24" width="14" height="10" rx="2" fill="rgba(68,255,136,0.08)" stroke="#44ff88" stroke-width="1.5"/>
+        </g>
+        <!-- Speed lines -->
+        <g stroke="rgba(68,255,136,0.25)" stroke-width="1.5" stroke-linecap="round">
+          <line x1="0" y1="28" x2="10" y2="28"/>
+          <line x1="0" y1="33" x2="7" y2="33"/>
+          <line x1="0" y1="38" x2="12" y2="38"/>
+        </g>
+      </svg>
+
+      <div class="hero-title">VAGAMON <span>MONSOON</span> RIDE</div>
+      <div class="hero-sub">KABI &amp; DEVA · PULSAR N150</div>
+      <div class="hero-date">02 – 04 JULY 2026</div>
+      <div class="hero-badge-row">
+        <span class="hero-badge dist">📍 280+ KM</span>
+        <span class="hero-badge night">🌙 2 NIGHT RIDES</span>
+        <span class="hero-badge mon">🌧️ MONSOON</span>
+        <span class="hero-badge risk">⚠️ HIGH RISK</span>
+      </div>
+    </div>
   </div>
 
   <div class="pw">
@@ -373,64 +598,168 @@ body { background: var(--bg); color: var(--text); font-family: var(--fb); min-he
     <div class="sec-label">ROUTE</div>
     <div class="route-map-wrap">
       <div class="route-svg-container">
-        <svg viewBox="0 0 640 180" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:640px">
-          <!-- Road line -->
-          <path d="M 30 90 L 180 90" stroke="#2266aa" stroke-width="3" stroke-dasharray="6,3" fill="none"/>
-          <path d="M 180 90 L 300 90" stroke="#226644" stroke-width="3" stroke-dasharray="6,3" fill="none"/>
-          <path d="M 300 90 C 340 90 350 70 380 60 C 410 50 420 70 460 90" stroke="#aa3322" stroke-width="3" fill="none"/>
-          <path d="M 460 90 C 490 110 510 130 540 110 C 560 95 570 80 590 90" stroke="#664422" stroke-width="4" fill="none"/>
+        <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:640px">
+          <defs>
+            <filter id="node-glow">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="hwy-glow">
+              <feGaussianBlur stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <!-- Night ride gradient -->
+            <linearGradient id="night-grad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#4466bb"/>
+              <stop offset="100%" stop-color="#6644bb"/>
+            </linearGradient>
+            <!-- Ghat gradient -->
+            <linearGradient id="ghat-grad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#cc4422"/>
+              <stop offset="100%" stop-color="#ffaa22"/>
+            </linearGradient>
+            <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#44aaff" opacity="0.6"/>
+            </marker>
+          </defs>
+
+          <!-- Shadow road (glow) -->
+          <path d="M 30 95 L 180 95" stroke="#2266aa" stroke-width="7" stroke-linecap="round" fill="none" opacity="0.15" filter="url(#hwy-glow)"/>
+          <path d="M 460 95 C 490 115 510 135 540 115 C 560 100 570 85 590 95" stroke="#cc4422" stroke-width="8" fill="none" opacity="0.15" filter="url(#hwy-glow)"/>
+
+          <!-- Animated road segments -->
+          <path class="route-anim-path p1" d="M 30 95 L 180 95" stroke="#2266aa" stroke-width="3" stroke-linecap="round" fill="none" marker-end="url(#arrow)"/>
+          <path class="route-anim-path p2" d="M 180 95 L 300 95" stroke="#226644" stroke-width="3" stroke-linecap="round" fill="none" marker-end="url(#arrow)"/>
+          <path class="route-anim-path p3" d="M 300 95 C 340 95 350 75 380 65 C 410 55 420 75 460 95" stroke="#aa3322" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+          <path class="route-anim-path p4" d="M 460 95 C 490 115 510 135 540 115 C 560 100 570 85 590 95" stroke="url(#ghat-grad)" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+
+          <!-- Road center dashes (static, appear on top of animated line) -->
+          <path d="M 35 95 L 175 95" stroke="rgba(255,255,255,0.06)" stroke-width="1" stroke-dasharray="8,6" fill="none"/>
+          <path d="M 185 95 L 295 95" stroke="rgba(255,255,255,0.06)" stroke-width="1" stroke-dasharray="8,6" fill="none"/>
 
           <!-- Distance labels -->
-          <text x="105" y="80" fill="#4488cc" font-family="DM Mono,monospace" font-size="9" text-anchor="middle">70 km · HWY</text>
-          <text x="240" y="80" fill="#448866" font-family="DM Mono,monospace" font-size="9" text-anchor="middle">50 km</text>
-          <text x="380" y="38" fill="#cc5533" font-family="DM Mono,monospace" font-size="9" text-anchor="middle">100 km</text>
-          <text x="525" y="155" fill="#ffaa44" font-family="DM Mono,monospace" font-size="9" text-anchor="middle">40 km · GHAT</text>
+          <text x="105" y="83" fill="#5599dd" font-family="DM Mono,monospace" font-size="9" text-anchor="middle">70 km · NH 544</text>
+          <text x="240" y="83" fill="#449966" font-family="DM Mono,monospace" font-size="9" text-anchor="middle">50 km</text>
+          <text x="380" y="43" fill="#dd6644" font-family="DM Mono,monospace" font-size="9" text-anchor="middle">100 km · GHAT</text>
+          <text x="525" y="160" fill="#ffaa44" font-family="DM Mono,monospace" font-size="9" text-anchor="middle">40 km · MOUNTAIN</text>
 
-          <!-- Night ride indicator -->
-          <rect x="22" y="100" width="66" height="14" rx="3" fill="rgba(187,136,255,0.15)" stroke="#6644bb" stroke-width="0.5"/>
-          <text x="55" y="111" fill="#9966ee" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">NIGHT RIDE</text>
-          <rect x="292" y="100" width="66" height="14" rx="3" fill="rgba(255,68,85,0.15)" stroke="#aa3322" stroke-width="0.5"/>
-          <text x="325" y="111" fill="#ff6655" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">3AM RIDE</text>
+          <!-- Night ride badges -->
+          <rect x="55" y="105" width="72" height="16" rx="4" fill="rgba(100,68,187,0.18)" stroke="#6644bb" stroke-width="0.8"/>
+          <text x="91" y="117" fill="#aa88ff" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">🌙 NIGHT RIDE</text>
+          <rect x="300" y="105" width="72" height="16" rx="4" fill="rgba(200,60,40,0.18)" stroke="#cc4422" stroke-width="0.8"/>
+          <text x="336" y="117" fill="#ff7766" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">🔴 3AM RIDE</text>
 
-          <!-- City nodes -->
-          <!-- MachDatum -->
-          <circle cx="30" cy="90" r="12" fill="#0f2040" stroke="#4488cc" stroke-width="2"/>
-          <text x="30" y="94" fill="#ffffff" font-size="11" text-anchor="middle">🏢</text>
-          <text x="30" y="115" fill="#99bbdd" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">OFFICE</text>
-          <text x="30" y="125" fill="#556677" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">18:00</text>
+          <!-- ── City nodes ── -->
+          <!-- START: Office / Ondipudur -->
+          <circle cx="30" cy="95" r="14" fill="#071828" stroke="#4488cc" stroke-width="2.5" filter="url(#node-glow)"/>
+          <circle cx="30" cy="95" r="18" fill="none" stroke="#4488cc" stroke-width="0.5" opacity="0.3"/>
+          <text x="30" y="100" fill="#ffffff" font-size="12" text-anchor="middle">🏢</text>
+          <text x="30" y="124" fill="#aaccee" font-family="DM Mono,monospace" font-size="8" text-anchor="middle" font-weight="bold">OFFICE</text>
+          <text x="30" y="134" fill="#ffcc44" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">18:00</text>
 
           <!-- Palakkad -->
-          <circle cx="180" cy="90" r="10" fill="#0f2810" stroke="#44aa44" stroke-width="2"/>
-          <text x="180" y="94" fill="#ffffff" font-size="10" text-anchor="middle">⛽</text>
-          <text x="180" y="112" fill="#88cc88" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">PALAKKAD</text>
-          <text x="180" y="122" fill="#556677" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">~19:30</text>
+          <circle cx="180" cy="95" r="11" fill="#0f2810" stroke="#44aa44" stroke-width="2" filter="url(#node-glow)"/>
+          <text x="180" y="100" fill="#ffffff" font-size="11" text-anchor="middle">⛽</text>
+          <text x="180" y="120" fill="#88cc88" font-family="DM Mono,monospace" font-size="8" text-anchor="middle" font-weight="bold">PALAKKAD</text>
+          <text x="180" y="130" fill="#ffcc44" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">~19:30</text>
 
-          <!-- Thrissur -->
-          <circle cx="300" cy="90" r="12" fill="#120d28" stroke="#6644bb" stroke-width="2"/>
-          <text x="300" y="94" fill="#ffffff" font-size="11" text-anchor="middle">🏨</text>
-          <text x="300" y="112" fill="#aa88ff" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">THRISSUR</text>
-          <text x="300" y="122" fill="#556677" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">SLEEP</text>
+          <!-- Thrissur / SLEEP -->
+          <circle cx="300" cy="95" r="14" fill="#120d28" stroke="#6644bb" stroke-width="2.5" filter="url(#node-glow)"/>
+          <circle cx="300" cy="95" r="18" fill="none" stroke="#6644bb" stroke-width="0.5" opacity="0.3"/>
+          <text x="300" y="100" fill="#ffffff" font-size="12" text-anchor="middle">🏨</text>
+          <text x="300" y="124" fill="#bb99ff" font-family="DM Mono,monospace" font-size="8" text-anchor="middle" font-weight="bold">THRISSUR</text>
+          <text x="300" y="134" fill="#aa88ff" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">SLEEP 22:00</text>
 
           <!-- Thodupuzha -->
-          <circle cx="460" cy="90" r="10" fill="#1a1200" stroke="#aaaa00" stroke-width="2"/>
-          <text x="460" y="94" fill="#ffffff" font-size="10" text-anchor="middle">⛽</text>
-          <text x="460" y="112" fill="#cccc44" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">THODUPUZHA</text>
-          <text x="460" y="122" fill="#556677" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">~06:00</text>
+          <circle cx="460" cy="95" r="11" fill="#1a1200" stroke="#ccaa00" stroke-width="2" filter="url(#node-glow)"/>
+          <text x="460" y="100" fill="#ffffff" font-size="11" text-anchor="middle">⛽</text>
+          <text x="460" y="120" fill="#ddcc44" font-family="DM Mono,monospace" font-size="8" text-anchor="middle" font-weight="bold">THODUPUZHA</text>
+          <text x="460" y="130" fill="#ffcc44" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">~06:00 ← LAST FUEL</text>
 
-          <!-- Vagamon -->
-          <circle cx="590" cy="90" r="13" fill="#1a0808" stroke="#cc4433" stroke-width="2.5"/>
-          <text x="590" y="94" fill="#ffffff" font-size="12" text-anchor="middle">🏔️</text>
-          <text x="590" y="112" fill="#ff8866" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">VAGAMON</text>
-          <text x="590" y="122" fill="#ffcc44" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">~07:40</text>
+          <!-- VAGAMON — destination star -->
+          <circle cx="590" cy="95" r="16" fill="#1a0a06" stroke="#ff5533" stroke-width="3" filter="url(#node-glow)"/>
+          <circle cx="590" cy="95" r="21" fill="none" stroke="#ff5533" stroke-width="0.8" opacity="0.4" class="bike-dot"/>
+          <text x="590" y="100" fill="#ffffff" font-size="14" text-anchor="middle">🏔️</text>
+          <text x="590" y="124" fill="#ff8866" font-family="DM Mono,monospace" font-size="8" text-anchor="middle" font-weight="bold">VAGAMON</text>
+          <text x="590" y="134" fill="#ffcc44" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">~07:40 · 1100m ASL</text>
 
-          <!-- Kurisumala inset -->
-          <circle cx="590" cy="45" r="9" fill="#071a10" stroke="#228855" stroke-width="1.5"/>
-          <text x="590" y="49" fill="#ffffff" font-size="9" text-anchor="middle">⛰️</text>
-          <line x1="590" y1="54" x2="590" y2="77" stroke="#228855" stroke-width="1.5" stroke-dasharray="3,2"/>
-          <text x="608" y="48" fill="#44ff88" font-family="DM Mono,monospace" font-size="8">KURISUMALA</text>
-          <text x="608" y="58" fill="#556677" font-family="DM Mono,monospace" font-size="7">DAY 2 TREK</text>
+          <!-- Kurisumala branch -->
+          <line x1="590" y1="58" x2="590" y2="79" stroke="#228855" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <circle cx="590" cy="48" r="10" fill="#061a0a" stroke="#228855" stroke-width="1.8" filter="url(#node-glow)"/>
+          <text x="590" y="53" fill="#ffffff" font-size="10" text-anchor="middle">⛰️</text>
+          <text x="612" y="46" fill="#44ff88" font-family="DM Mono,monospace" font-size="8">KURISUMALA</text>
+          <text x="612" y="57" fill="#33aa66" font-family="DM Mono,monospace" font-size="7">DAY 2 TREK</text>
+
+          <!-- Elevation hint bars at bottom -->
+          <g opacity="0.35">
+            <rect x="5"   y="175" width="40"  height="4" rx="2" fill="#4488cc"/>
+            <rect x="155" y="173" width="45"  height="6" rx="2" fill="#44aa44"/>
+            <rect x="275" y="172" width="50"  height="7" rx="2" fill="#6644bb"/>
+            <rect x="435" y="168" width="50"  height="11" rx="2" fill="#ccaa00"/>
+            <rect x="565" y="155" width="50"  height="24" rx="2" fill="#ff5533"/>
+            <text x="589" y="171" fill="#ff8866" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">~1100m</text>
+          </g>
         </svg>
       </div>
+    </div>
+
+    <div class="sec-label">ELEVATION PROFILE</div>
+    <div class="elev-wrap">
+      <svg viewBox="0 0 600 110" xmlns="http://www.w3.org/2000/svg" width="100%">
+        <defs>
+          <linearGradient id="elev-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#ff5533" stop-opacity="0.7"/>
+            <stop offset="40%"  stop-color="#ffaa22" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#44ff88" stop-opacity="0.1"/>
+          </linearGradient>
+          <linearGradient id="elev-line-grad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"   stop-color="#44aaff"/>
+            <stop offset="45%"  stop-color="#44aaff"/>
+            <stop offset="60%"  stop-color="#ffaa22"/>
+            <stop offset="100%" stop-color="#ff5533"/>
+          </linearGradient>
+          <clipPath id="elev-clip">
+            <rect x="40" y="0" width="555" height="88"/>
+          </clipPath>
+        </defs>
+        <!-- Y axis grid lines -->
+        <line x1="40" y1="10" x2="595" y2="10" stroke="#1c221c" stroke-width="0.8"/>
+        <line x1="40" y1="32" x2="595" y2="32" stroke="#1c221c" stroke-width="0.8"/>
+        <line x1="40" y1="54" x2="595" y2="54" stroke="#1c221c" stroke-width="0.8"/>
+        <line x1="40" y1="76" x2="595" y2="76" stroke="#1c221c" stroke-width="0.8"/>
+        <!-- Y axis labels -->
+        <text x="36" y="13"  fill="#566254" font-family="DM Mono,monospace" font-size="8" text-anchor="end">1200m</text>
+        <text x="36" y="35"  fill="#566254" font-family="DM Mono,monospace" font-size="8" text-anchor="end">800m</text>
+        <text x="36" y="57"  fill="#566254" font-family="DM Mono,monospace" font-size="8" text-anchor="end">400m</text>
+        <text x="36" y="79"  fill="#566254" font-family="DM Mono,monospace" font-size="8" text-anchor="end">0m</text>
+        <!-- Area fill -->
+        <path class="elev-area" d="
+          M 45 74  L 100 72 L 155 70 L 210 68 L 265 66
+          L 320 64 L 340 62 L 365 55 L 390 42 L 415 28
+          L 440 16 L 465 12 L 490 14 L 515 18 L 540 22
+          L 565 76 L 45 76 Z"
+          fill="url(#elev-grad)" clip-path="url(#elev-clip)"/>
+        <!-- Elevation line -->
+        <path class="elev-line" d="
+          M 45 74  L 100 72 L 155 70 L 210 68 L 265 66
+          L 320 64 L 340 62 L 365 55 L 390 42 L 415 28
+          L 440 16 L 465 12 L 490 14 L 515 18 L 540 22"
+          stroke="url(#elev-line-grad)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" clip-path="url(#elev-clip)"/>
+        <!-- City markers -->
+        <g font-family="DM Mono,monospace" font-size="8">
+          <circle cx="45"  cy="74" r="4" fill="#4488cc"/><text x="45"  y="90" fill="#5599cc" text-anchor="middle">CBE</text>
+          <circle cx="155" cy="70" r="4" fill="#44aa44"/><text x="155" y="90" fill="#44aa44" text-anchor="middle">PKD</text>
+          <circle cx="265" cy="66" r="4" fill="#6644bb"/><text x="265" y="90" fill="#9966ee" text-anchor="middle">TSR</text>
+          <circle cx="390" cy="42" r="4" fill="#ccaa00"/><text x="390" y="90" fill="#ddcc44" text-anchor="middle">TDP</text>
+          <circle cx="465" cy="12" r="5" fill="#ff5533" stroke="#ff8866" stroke-width="1.5"/><text x="465" y="90" fill="#ff7755" text-anchor="middle" font-weight="bold">VAGAMON</text>
+        </g>
+        <!-- Peak annotation -->
+        <line x1="465" y1="17" x2="465" y2="6" stroke="#ff5533" stroke-width="1" stroke-dasharray="2,2"/>
+        <text x="467" y="9" fill="#ff8866" font-family="DM Mono,monospace" font-size="7">~1100m ASL</text>
+        <!-- Ghat zone shading -->
+        <rect x="360" y="0" width="150" height="88" fill="rgba(255,68,50,0.04)" clip-path="url(#elev-clip)"/>
+        <text x="435" y="99" fill="#aa3322" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">⚠ GHAT SECTION</text>
+      </svg>
     </div>
 
     <div class="sec-label">TRIP PHASES</div>
@@ -566,8 +895,14 @@ body { background: var(--bg); color: var(--text); font-family: var(--fb); min-he
         <div class="tl-note">Get dressed. Check chain, brakes, tyre pressure, lights. Eat something light. Hydrate.</div>
       </div>
 
-      <div id="block-night-ride" class="tl-block travel">
-        <div class="tl-top">
+      <div id="block-night-ride" class="tl-block travel" style="position:relative;overflow:hidden">
+        <!-- fog layers -->
+        <div class="fog-layer">
+          <div class="fog-puff" style="top:10%;left:-30%;animation-duration:8s;animation-delay:0s"></div>
+          <div class="fog-puff" style="top:40%;left:-10%;animation-duration:11s;animation-delay:3s;opacity:0.5"></div>
+          <div class="fog-puff" style="top:70%;left:-20%;animation-duration:9s;animation-delay:6s;width:160px"></div>
+        </div>
+        <div class="tl-top" style="position:relative;z-index:1">
           <span class="tl-block-time">03:00</span>
           <span class="tl-block-name">🏍️ Thrissur → Thodupuzha — Night Ride</span>
           <span class="tl-block-type">TRAVEL</span>
@@ -1325,6 +1660,140 @@ function markCurrentDone() {
 }
 
 // ══════════════════════════════════════════════
+// RAIN ANIMATION
+// ══════════════════════════════════════════════
+
+function initRain() {
+  const canvas = document.getElementById('rain-canvas')
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  const hero = canvas.parentElement
+
+  function resize() {
+    canvas.width  = hero.offsetWidth
+    canvas.height = hero.offsetHeight
+  }
+  resize()
+  window.addEventListener('resize', resize)
+
+  const drops = Array.from({ length: 80 }, () => ({
+    x: Math.random() * 1200,
+    y: Math.random() * 300,
+    len:    6 + Math.random() * 14,
+    speed:  4 + Math.random() * 7,
+    opacity: 0.15 + Math.random() * 0.35,
+    width:  0.4 + Math.random() * 0.8,
+  }))
+
+  function drawRain() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    drops.forEach(d => {
+      ctx.beginPath()
+      ctx.moveTo(d.x, d.y)
+      ctx.lineTo(d.x + 2, d.y + d.len)
+      ctx.strokeStyle = `rgba(120,180,255,${d.opacity})`
+      ctx.lineWidth = d.width
+      ctx.stroke()
+      d.y += d.speed
+      d.x += 1.5
+      if (d.y > canvas.height + 20) {
+        d.y = -20
+        d.x = Math.random() * canvas.width
+      }
+    })
+    requestAnimationFrame(drawRain)
+  }
+  drawRain()
+
+  // Stars
+  const stars = Array.from({ length: 30 }, () => ({
+    x: Math.random() * 1200, y: 10 + Math.random() * 80,
+    r: 0.8 + Math.random() * 1.5, phase: Math.random() * Math.PI * 2
+  }))
+
+  function drawStars(t) {
+    stars.forEach(s => {
+      const alpha = 0.2 + 0.6 * Math.abs(Math.sin(s.phase + t * 0.001))
+      ctx.beginPath()
+      ctx.arc(s.x % canvas.width, s.y, s.r, 0, Math.PI * 2)
+      ctx.fillStyle = `rgba(200,230,255,${alpha})`
+      ctx.fill()
+    })
+  }
+
+  let t0 = 0
+  function frame(t) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    drawStars(t)
+    drops.forEach(d => {
+      ctx.beginPath()
+      ctx.moveTo(d.x % canvas.width, d.y)
+      ctx.lineTo((d.x + 2) % canvas.width, d.y + d.len)
+      ctx.strokeStyle = `rgba(100,160,255,${d.opacity})`
+      ctx.lineWidth = d.width
+      ctx.stroke()
+      d.y += d.speed
+      d.x += 1.2
+      if (d.y > canvas.height + 20) {
+        d.y = -20; d.x = Math.random() * canvas.width
+      }
+    })
+    requestAnimationFrame(frame)
+  }
+  requestAnimationFrame(frame)
+}
+
+// ══════════════════════════════════════════════
+// STAT COUNT-UP ANIMATION
+// ══════════════════════════════════════════════
+
+function animateCountUp(el, target, suffix, duration) {
+  const isText = isNaN(parseFloat(target))
+  if (isText) return
+  const num = parseFloat(target)
+  const start = performance.now()
+  function step(now) {
+    const p = Math.min((now - start) / duration, 1)
+    const ease = 1 - Math.pow(1 - p, 3)
+    const cur = Math.round(num * ease)
+    el.textContent = cur + suffix
+    if (p < 1) requestAnimationFrame(step)
+    else el.textContent = target + suffix
+  }
+  requestAnimationFrame(step)
+}
+
+function triggerStatCountUp() {
+  const defs = [
+    { sel: '.stat-card:nth-child(1) .stat-val', val: '280', suf: '+' },
+    { sel: '.stat-card:nth-child(2) .stat-val', val: '3',   suf: '' },
+    { sel: '.stat-card:nth-child(3) .stat-val', val: '2',   suf: '' },
+  ]
+  defs.forEach((d, i) => {
+    const el = document.querySelector(d.sel)
+    if (el) setTimeout(() => animateCountUp(el, d.val, d.suf, 900), i * 150)
+  })
+}
+
+// ══════════════════════════════════════════════
+// INTERSECTION OBSERVER (entrance animations)
+// ══════════════════════════════════════════════
+
+const entryObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.animationPlayState = 'running'
+      entryObserver.unobserve(e.target)
+    }
+  })
+}, { threshold: 0.1 })
+
+document.querySelectorAll('.tl-block, .risk-card, .stat-card').forEach(el => {
+  el.style.animationPlayState = 'paused'
+  entryObserver.observe(el)
+})
+
+// ══════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════
 
@@ -1333,6 +1802,9 @@ window.addEventListener('focus', () => { if (tripStartTS) updateLiveDisplay() })
 renderChecklist(BIKE_CHECKLIST, 'bike-checklist', 'green')
 renderChecklist(RIDER_CHECKLIST, 'rider-checklist', 'blue')
 updateChecklistProgress()
+
+initRain()
+setTimeout(triggerStatCountUp, 300)
 
 if (tripStartTS) {
   document.getElementById('live-indicator').classList.add('active')
