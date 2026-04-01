@@ -2,8 +2,8 @@ import { Hono } from 'hono'
 import { db } from '../db'
 import { isValidSession, getSessionRole } from '../middleware/auth'
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? 'kabi2025'
-const DEVA_PASSWORD  = process.env.DEVA_PASSWORD  ?? 'deva2025'
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD
+const DEVA_PASSWORD  = process.env.DEVA_PASSWORD
 
 const auth = new Hono()
 

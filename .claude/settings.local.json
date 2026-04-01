@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bun build:*)",
+      "Bash(bunx tsc:*)",
+      "Bash(timeout 5 bun src/index.ts)",
+      "Bash(bun scripts/populate-vagamon.ts)",
+      "Bash(ssh-keygen:*)",
+      "Bash(ssh:*)"
+    ]
+  }
+}

@@ -4,7 +4,12 @@
 
 [functions]
   directory    = "netlify/functions"
-  node_bundler = "esbuild"
+  node_bundler = "nft"
+
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
 
 [dev]
   command     = "bun --hot src/index.ts"
