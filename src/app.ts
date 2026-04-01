@@ -1,6 +1,5 @@
 import { Hono } from 'hono'
-import { initDb } from './db'
-import { seed } from './seed'
+import { initStore } from './store'
 import authRoutes from './routes/auth'
 import destRoutes from './routes/destinations'
 import sectionRoutes from './routes/sections'
@@ -8,8 +7,7 @@ import itemRoutes from './routes/items'
 import checklistRoutes from './routes/checklist'
 
 export async function createApp() {
-  await initDb()
-  await seed()
+  initStore()
 
   const app = new Hono()
 

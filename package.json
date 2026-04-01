@@ -9,7 +9,6 @@
     "netlify": "netlify dev"
   },
   "dependencies": {
-    "@libsql/client": "^0.14.0",
     "hono": "^4.7.0"
   },
   "devDependencies": {

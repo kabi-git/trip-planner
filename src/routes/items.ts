@@ -1,32 +1,26 @@
 import { Hono } from 'hono'
-import { db } from '../db'
+import { store } from '../store'
 import { requireAuth } from '../middleware/auth'
 
 const items = new Hono()
 
 items.put('/:id', requireAuth, async (c) => {
-  const id = c.req.param('id')
-  const existing = await db.get('SELECT * FROM items WHERE id = ?', [id])
-  if (!existing) return c.json({ error: 'Not found' }, 404)
-
+  const id = Number(c.req.param('id'))
   const { item_type, text, note, tag, tag_color } = await c.req.json()
-  await db.run(
-    'UPDATE items SET item_type=?, text=?, note=?, tag=?, tag_color=? WHERE id=?',
-    [
-      item_type ?? existing.item_type,
-      text      ?? existing.text,
-      note      ?? existing.note,
-      tag       ?? existing.tag,
-      tag_color ?? existing.tag_color,
-      id,
-    ]
-  )
-  return c.json(await db.get('SELECT * FROM items WHERE id = ?', [id]))
+  const item = store.items.update(id, {
+    ...(item_type !== undefined && { item_type }),
+    ...(text      !== undefined && { text }),
+    ...(note      !== undefined && { note }),
+    ...(tag       !== undefined && { tag }),
+    ...(tag_color !== undefined && { tag_color }),
+  })
+  if (!item) return c.json({ error: 'Not found' }, 404)
+  return c.json(item)
 })
 
 items.delete('/:id', requireAuth, async (c) => {
-  const { changes } = await db.run('DELETE FROM items WHERE id = ?', [c.req.param('id')])
-  if (changes === 0) return c.json({ error: 'Not found' }, 404)
+  if (!store.items.delete(Number(c.req.param('id'))))
+    return c.json({ error: 'Not found' }, 404)
   return c.json({ ok: true })
 })
 
