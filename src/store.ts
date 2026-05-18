@@ -43,7 +43,7 @@ const SEED_DESTINATIONS: Destination[] = [
     emoji: '🏔️', distance_km: 240, duration_hrs: '6–7 hrs (split across 2 legs)',
     tags: ['GHATS', 'MONSOON', 'TREK', 'ADVENTURE', 'NIGHT RIDE'],
     confirmed: true, created_at: '2026-03-30T01:30:37Z',
-    notes: '2-day overnight trip. Depart 02 Jul 2026 at 6:00 PM from office.\nLeg 1: Office (MachDatum) → Thrissur (night stay)\nLeg 2: Thrissur → Vagamon (night ride, 3:00 AM)\nBike: Pulsar N 150 — Kabi & Deva\nHotels: TBD (see Stay Options section)\nDay 3: Kurisimala trek → depart straight home.',
+    notes: '2-day overnight trip. Depart 03 Jul 2026 at 6:00 PM from office.\nLeg 1: Office (MachDatum) → Thrissur (night stay)\nLeg 2: Thrissur → Vagamon (night ride, 3:00 AM)\nBike: Pulsar N 150 — Kabi & Deva\nHotels: TBD (see Stay Options section)\nDay 3: Kurisimala trek → depart straight home.',
   },
   {
     id: 2, name: 'Wayanad', subtitle: 'Forests · Waterfalls · Wildlife',

@@ -65,7 +65,7 @@ await api('PUT', `/api/destinations/${destId}`, {
   distance_km: 240,
   duration_hrs: '6–7 hrs (split across 2 legs)',
   tags: ['GHATS', 'MONSOON', 'TREK', 'ADVENTURE', 'NIGHT RIDE'],
-  notes: `2-day overnight trip. Depart 02 Jul 2026 at 6:00 PM from office.
+  notes: `2-day overnight trip. Depart 03 Jul 2026 at 6:00 PM from office.
 Leg 1: Office (MachDatum) → Thrissur (night stay)
 Leg 2: Thrissur → Vagamon (night ride, 3:00 AM)
 Bike: Pulsar N 150 — Kabi & Deva
@@ -126,7 +126,7 @@ await addSection('🛣️', 'Route Overview', 'route', [
 // ══════════════════════════════════════════════════════════════════════════
 // SECTION 2 — Day 1: Office to Thrissur
 // ══════════════════════════════════════════════════════════════════════════
-await addSection('🌆', 'Day 1 — Office to Thrissur  (02 Jul 2026)', 'route', [
+await addSection('🌆', 'Day 1 — Office to Thrissur  (03 Jul 2026)', 'route', [
   {
     item_type: 'route_stop',
     text: 'Office (MachDatum) — Depart 6:00 PM',
@@ -190,7 +190,7 @@ await addSection('🌆', 'Day 1 — Office to Thrissur  (02 Jul 2026)', 'route',
 // ══════════════════════════════════════════════════════════════════════════
 // SECTION 3 — Day 2: Night Ride to Vagamon
 // ══════════════════════════════════════════════════════════════════════════
-await addSection('🌙', 'Day 2 — Night Ride to Vagamon  (03 Jul 2026)', 'route', [
+await addSection('🌙', 'Day 2 — Night Ride to Vagamon  (04 Jul 2026)', 'route', [
   {
     item_type: 'route_stop',
     text: 'Wake up — 2:00–2:30 AM',
