@@ -1,0 +1,1046 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Munnar Anniversary Ride — Execution Plan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #080a08; --s1: #0f130f; --s2: #141914;
+        --b1: #1c221c; --b2: #252d25;
+        --text: #e8ede8; --muted: #566254; --muted2: #788776;
+        --green: #44ff88; --amber: #ffcc44; --red: #ff4455;
+        --blue: #44aaff; --purple: #bb88ff; --pink: #ff88bb;
+        --travel-bg: #071828; --travel-bd: #2266aa;
+        --rest-bg: #120d28;   --rest-bd: #6644bb;
+        --activity-bg: #071a10; --activity-bd: #228855;
+        --food-bg: #1a1200;   --food-bd: #aa8800;
+        --trek-bg: #1a0808;   --trek-bd: #aa3322;
+        --fh: "Bebas Neue", sans-serif;
+        --fm: "DM Mono", monospace;
+        --fb: "DM Sans", sans-serif;
+        --r: 10px;
+      }
+      *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      body { background: var(--bg); color: var(--text); font-family: var(--fb); min-height: 100vh; overflow-x: hidden; }
+
+      /* ── TOPBAR ── */
+      #topbar { position: sticky; top: 0; z-index: 100; background: rgba(8,10,8,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--b1); display: flex; align-items: center; gap: 12px; padding: 0 16px; height: 52px; }
+      .back-link { font-family: var(--fm); font-size: 11px; color: var(--muted2); text-decoration: none; flex-shrink: 0; transition: color 0.15s; letter-spacing: 0.5px; }
+      .back-link:hover { color: var(--text); }
+      .topbar-title { font-family: var(--fh); font-size: 18px; letter-spacing: 2px; flex: 1; color: var(--text); }
+      .topbar-title span { color: var(--green); }
+
+      /* ── TAB NAV ── */
+      #tab-nav { position: sticky; top: 52px; z-index: 90; background: rgba(8,10,8,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--b1); display: flex; overflow-x: auto; scrollbar-width: none; }
+      #tab-nav::-webkit-scrollbar { display: none; }
+      .tab-btn { font-family: var(--fm); font-size: 11px; letter-spacing: 0.5px; padding: 12px 16px; cursor: pointer; white-space: nowrap; background: transparent; border: none; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; flex-shrink: 0; }
+      .tab-btn:hover { color: var(--muted2); }
+      .tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+
+      /* ── VIEWS ── */
+      .view { display: none; padding: 0 0 100px; }
+      .view.active { display: block; }
+      .pw { max-width: 780px; margin: 0 auto; padding: 0 16px; }
+
+      /* ── SEC LABEL ── */
+      .sec-label { font-family: var(--fm); font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; padding-top: 28px; display: flex; align-items: center; gap: 8px; }
+      .sec-label::after { content: ""; flex: 1; height: 1px; background: var(--b1); }
+
+      /* ── HERO ── */
+      .hero-banner { background: linear-gradient(135deg, #071a10 0%, #0d1f1a 50%, #071828 100%); border-bottom: 1px solid var(--b2); padding: 28px 16px 24px; text-align: center; position: relative; overflow: hidden; }
+      .hero-content { position: relative; z-index: 2; }
+      .hero-mountain { position: absolute; bottom: 0; left: 0; right: 0; z-index: 1; pointer-events: none; }
+      .hero-bike-svg { display: block; margin: 0 auto 8px; animation: float-up 3s ease-in-out infinite; filter: drop-shadow(0 0 12px rgba(68,255,136,0.5)); }
+      .hero-title { font-family: var(--fh); font-size: clamp(28px,6vw,48px); letter-spacing: 3px; line-height: 1; text-shadow: 0 0 40px rgba(68,255,136,0.3); animation: hero-pulse 4s ease-in-out infinite; }
+      .hero-title span { color: var(--green); }
+      .hero-sub { font-family: var(--fm); font-size: 11px; color: var(--muted2); letter-spacing: 1.5px; margin-top: 8px; }
+      .hero-date { font-family: var(--fh); font-size: 16px; color: var(--amber); letter-spacing: 2px; margin-top: 6px; }
+      .hero-badge-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+      .hero-badge { font-family: var(--fm); font-size: 10px; padding: 5px 12px; border-radius: 20px; letter-spacing: 0.5px; border: 1px solid; }
+      .hero-badge.dist { background: rgba(68,170,255,0.1); color: var(--blue); border-color: rgba(68,170,255,0.3); }
+      .hero-badge.night { background: rgba(187,136,255,0.1); color: var(--purple); border-color: rgba(187,136,255,0.3); }
+      .hero-badge.mon { background: rgba(68,255,136,0.08); color: var(--green); border-color: rgba(68,255,136,0.25); }
+      .hero-badge.ann { background: rgba(255,136,187,0.1); color: var(--pink); border-color: rgba(255,136,187,0.3); }
+
+      /* ── COUNTDOWN ── */
+      .countdown-wrap { margin-top: 20px; display: inline-flex; flex-direction: column; align-items: center; gap: 6px; }
+      .countdown-label { font-family: var(--fm); font-size: 9px; color: var(--muted2); letter-spacing: 3px; text-transform: uppercase; }
+      .countdown-units { display: flex; gap: 8px; align-items: flex-end; }
+      .cd-unit { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+      .cd-num { font-family: var(--fh); font-size: clamp(26px,7vw,42px); letter-spacing: 2px; line-height: 1; color: var(--green); min-width: 52px; text-align: center; background: rgba(68,255,136,0.06); border: 1px solid rgba(68,255,136,0.15); border-radius: 8px; padding: 6px 4px; transition: color 0.3s; }
+      .cd-lbl { font-family: var(--fm); font-size: 8px; color: var(--muted); letter-spacing: 1.5px; }
+      .cd-sep { font-family: var(--fh); font-size: 26px; color: var(--muted); margin-bottom: 18px; line-height: 1; }
+      .countdown-date { font-family: var(--fm); font-size: 10px; color: var(--amber); letter-spacing: 1.5px; margin-top: 2px; }
+      .countdown-wrap.done .cd-num { color: var(--amber); border-color: rgba(255,204,68,0.3); background: rgba(255,204,68,0.06); }
+      .countdown-wrap.done .countdown-label::after { content: " — IT'S TIME! 🏍️❤️"; color: var(--amber); }
+      @keyframes cd-tick { 0%,100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+      .cd-num.tick { animation: cd-tick 0.2s ease; }
+
+      /* ── STATS ── */
+      .stats-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(120px,1fr)); gap: 10px; margin-top: 20px; }
+      .stat-card { background: var(--s1); border: 1px solid var(--b2); border-radius: var(--r); padding: 14px 16px; animation: fade-slide-in 0.5s ease both; transition: transform 0.2s, box-shadow 0.2s; }
+      .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+      .stat-card:nth-child(1) { animation-delay:.05s; } .stat-card:nth-child(2) { animation-delay:.12s; } .stat-card:nth-child(3) { animation-delay:.19s; } .stat-card:nth-child(4) { animation-delay:.26s; }
+      .stat-val { font-family: var(--fh); font-size: 28px; letter-spacing: 1px; line-height: 1; }
+      .stat-val.green { color: var(--green); } .stat-val.amber { color: var(--amber); } .stat-val.red { color: var(--red); } .stat-val.blue { color: var(--blue); } .stat-val.pink { color: var(--pink); }
+      .stat-lbl { font-family: var(--fm); font-size: 9px; color: var(--muted); letter-spacing: 1.5px; margin-top: 4px; text-transform: uppercase; }
+
+      /* ── ROUTE MAP ── */
+      .route-map-wrap { background: var(--s1); border: 1px solid var(--b2); border-radius: var(--r); padding: 20px 12px; overflow-x: auto; }
+      .route-svg-container { min-width: 600px; }
+
+      /* ── ELEVATION ── */
+      .elev-wrap { background: var(--s1); border: 1px solid var(--b2); border-radius: var(--r); padding: 16px 12px 8px; overflow-x: auto; }
+      .elev-wrap svg { min-width: 500px; }
+      .elev-area { animation: elev-fill 1.4s ease forwards 0.3s; opacity: 0; }
+      .elev-line { stroke-dasharray: 900; stroke-dashoffset: 900; animation: draw-path 2s ease forwards 0.5s; --dash-len: 900; }
+
+      /* ── TIMELINE ── */
+      .day-header { border-radius: var(--r); padding: 16px 18px; margin: 24px 0 16px; display: flex; align-items: center; gap: 14px; border: 1px solid; }
+      .day-header.day1 { background: #071828; border-color: #2266aa; }
+      .day-header.day2 { background: #071a10; border-color: #228855; }
+      .day-header.day3 { background: #1a0a02; border-color: #aa5500; }
+      .day-header.day4 { background: #120d28; border-color: #6644bb; }
+      .day-header-emoji { font-size: 28px; flex-shrink: 0; }
+      .day-header-info { flex: 1; }
+      .day-header-title { font-family: var(--fh); font-size: 22px; letter-spacing: 1.5px; }
+      .day-header.day1 .day-header-title { color: var(--blue); }
+      .day-header.day2 .day-header-title { color: var(--green); }
+      .day-header.day3 .day-header-title { color: var(--amber); }
+      .day-header.day4 .day-header-title { color: var(--purple); }
+      .day-header-date { font-family: var(--fm); font-size: 10px; color: var(--muted2); letter-spacing: 1px; margin-top: 2px; }
+      .day-header-badge { font-family: var(--fm); font-size: 9px; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+      .day1 .day-header-badge { background: rgba(68,170,255,0.1); color: var(--blue); border: 1px solid rgba(68,170,255,0.3); }
+      .day2 .day-header-badge { background: rgba(68,255,136,0.1); color: var(--green); border: 1px solid rgba(68,255,136,0.3); }
+      .day3 .day-header-badge { background: rgba(255,204,68,0.1); color: var(--amber); border: 1px solid rgba(255,204,68,0.3); }
+      .day4 .day-header-badge { background: rgba(187,136,255,0.1); color: var(--purple); border: 1px solid rgba(187,136,255,0.3); }
+
+      .timeline { position: relative; padding-left: 52px; }
+      .tl-line { position: absolute; left: 38px; top: 0; bottom: 0; width: 2px; background: var(--b2); border-radius: 1px; }
+      .tl-block { position: relative; border-radius: 8px; border-left: 3px solid; padding: 14px 16px; margin-bottom: 12px; transition: box-shadow 0.2s; animation: fade-slide-in 0.4s ease both; }
+      .tl-block::before { content: ""; position: absolute; left: -24px; top: 14px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid; background: var(--bg); }
+      .tl-block:hover { box-shadow: 0 2px 16px rgba(0,0,0,0.4); }
+      .tl-block.travel { background: var(--travel-bg); border-color: var(--travel-bd); }
+      .tl-block.rest { background: var(--rest-bg); border-color: var(--rest-bd); }
+      .tl-block.activity { background: var(--activity-bg); border-color: var(--activity-bd); }
+      .tl-block.food { background: var(--food-bg); border-color: var(--food-bd); }
+      .tl-block.trek { background: var(--trek-bg); border-color: var(--trek-bd); }
+      .tl-block.travel::before { border-color: var(--travel-bd); background: var(--travel-bd); }
+      .tl-block.rest::before { border-color: var(--rest-bd); background: var(--rest-bd); }
+      .tl-block.activity::before { border-color: var(--activity-bd); background: var(--activity-bd); }
+      .tl-block.food::before { border-color: var(--food-bd); background: var(--food-bd); }
+      .tl-block.trek::before { border-color: var(--trek-bd); background: var(--trek-bd); }
+      .tl-top { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
+      .tl-block-time { font-family: var(--fm); font-size: 10px; color: var(--muted2); flex-shrink: 0; margin-top: 2px; }
+      .tl-block-name { font-size: 14px; font-weight: 500; flex: 1; }
+      .tl-block-type { font-family: var(--fm); font-size: 9px; padding: 2px 8px; border-radius: 3px; flex-shrink: 0; letter-spacing: 0.5px; text-transform: uppercase; }
+      .travel .tl-block-type { background: rgba(68,170,255,0.1); color: var(--blue); }
+      .rest .tl-block-type { background: rgba(187,136,255,0.1); color: var(--purple); }
+      .activity .tl-block-type { background: rgba(68,255,136,0.1); color: var(--green); }
+      .food .tl-block-type { background: rgba(255,204,68,0.1); color: var(--amber); }
+      .trek .tl-block-type { background: rgba(255,68,85,0.1); color: var(--red); }
+      .tl-note { font-family: var(--fm); font-size: 11px; color: var(--muted2); margin-top: 6px; line-height: 1.5; padding: 8px 10px; background: rgba(0,0,0,0.2); border-radius: 5px; }
+
+      /* ── CHECKLISTS ── */
+      .checklist-header { display: flex; align-items: center; gap: 16px; background: var(--s1); border: 1px solid var(--b2); border-radius: var(--r); padding: 16px; margin-bottom: 4px; }
+      .checklist-progress-ring { width: 80px; height: 80px; flex-shrink: 0; }
+      .checklist-header-info { flex: 1; }
+      .checklist-header-title { font-family: var(--fh); font-size: 20px; letter-spacing: 1px; }
+      .checklist-header-sub { font-family: var(--fm); font-size: 10px; color: var(--muted2); margin-top: 2px; }
+      .checklist-progress-text { font-family: var(--fm); font-size: 11px; color: var(--green); margin-top: 4px; }
+      .ring-track { transition: stroke-dashoffset 0.7s cubic-bezier(0.4,0,0.2,1); }
+      .cl-category { margin-bottom: 4px; }
+      .cl-cat-label { font-family: var(--fm); font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; padding: 10px 14px 6px; display: block; }
+      .cl-item { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-bottom: 1px solid var(--b1); background: var(--s1); transition: background 0.1s; cursor: pointer; min-height: 52px; animation: fade-slide-in 0.3s ease both; }
+      .cl-item:first-of-type { border-radius: 8px 8px 0 0; }
+      .cl-item:last-of-type { border-radius: 0 0 8px 8px; border-bottom: none; }
+      .cl-item:only-of-type { border-radius: 8px; border-bottom: none; }
+      .cl-item:hover { background: var(--s2); }
+      .cl-item.checked .cl-text { color: var(--muted); text-decoration: line-through; }
+      .cl-check { width: 24px; height: 24px; border: 1.5px solid var(--b2); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; background: transparent; }
+      .cl-item.checked .cl-check { background: var(--green); border-color: var(--green); }
+      .cl-item.checked .cl-check::after { content: "✓"; color: #000; font-weight: bold; font-size: 13px; }
+      .cl-text { flex: 1; font-size: 13.5px; line-height: 1.3; }
+      .cl-mandatory { font-family: var(--fm); font-size: 9px; padding: 2px 7px; border-radius: 10px; flex-shrink: 0; }
+      .cl-mandatory.must { background: rgba(255,68,85,0.12); color: var(--red); border: 1px solid rgba(255,68,85,0.25); }
+      .cl-mandatory.opt { background: rgba(119,135,118,0.12); color: var(--muted2); border: 1px solid var(--b2); }
+
+      /* ── RISKS ── */
+      .risk-card { background: var(--s1); border-radius: var(--r); border: 1px solid var(--b2); overflow: hidden; margin-bottom: 10px; animation: fade-slide-in 0.4s ease both; transition: transform 0.2s; }
+      .risk-card:hover { transform: translateX(4px); }
+      .risk-card-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; }
+      .risk-level-bar { width: 4px; align-self: stretch; border-radius: 2px; flex-shrink: 0; }
+      .risk-level-bar.high { background: var(--red); }
+      .risk-level-bar.medium { background: var(--amber); }
+      .risk-level-bar.low { background: var(--green); }
+      .risk-icon { font-size: 24px; flex-shrink: 0; }
+      .risk-info { flex: 1; }
+      .risk-name { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+      .risk-level-tag { font-family: var(--fm); font-size: 9px; padding: 2px 8px; border-radius: 3px; display: inline-block; }
+      .risk-level-tag.high { background: rgba(255,68,85,0.1); color: var(--red); border: 1px solid rgba(255,68,85,0.25); }
+      .risk-level-tag.medium { background: rgba(255,204,68,0.1); color: var(--amber); border: 1px solid rgba(255,204,68,0.25); }
+      .risk-level-tag.low { background: rgba(68,255,136,0.08); color: var(--green); border: 1px solid rgba(68,255,136,0.2); }
+      .risk-body { padding: 0 16px 14px; }
+      .risk-when { font-family: var(--fm); font-size: 10px; color: var(--muted2); margin-bottom: 8px; }
+      .risk-mitigation { display: flex; flex-direction: column; gap: 4px; }
+      .risk-mit-item { display: flex; gap: 8px; font-size: 12px; color: var(--muted2); line-height: 1.4; }
+      .risk-mit-item::before { content: "→"; color: var(--green); flex-shrink: 0; }
+
+      /* ── FOOTER ── */
+      #footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(8,10,8,0.95); backdrop-filter: blur(12px); border-top: 1px solid var(--b1); padding: 12px 16px; z-index: 80; }
+      .footer-inner { max-width: 780px; margin: 0 auto; display: flex; gap: 10px; align-items: center; }
+      .footer-checklist-summary { font-family: var(--fm); font-size: 11px; color: var(--muted2); flex: 1; }
+      .footer-checklist-summary strong { color: var(--green); }
+
+      /* ── ANIMATIONS ── */
+      @keyframes float-up { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+      @keyframes hero-pulse { 0%,100% { opacity: 0.8; } 50% { opacity: 1; } }
+      @keyframes draw-path { from { stroke-dashoffset: var(--dash-len,800); } to { stroke-dashoffset: 0; } }
+      @keyframes fade-slide-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+      @keyframes elev-fill { from { opacity: 0; transform: scaleY(0); transform-origin: bottom; } to { opacity: 1; transform: scaleY(1); transform-origin: bottom; } }
+      @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+      .route-anim-path { fill: none; stroke-dasharray: var(--dash-len,800); stroke-dashoffset: var(--dash-len,800); animation: draw-path 2.2s cubic-bezier(0.4,0,0.2,1) forwards; }
+      .route-anim-path.p1 { --dash-len:180; animation-delay:0.1s; }
+      .route-anim-path.p2 { --dash-len:150; animation-delay:0.7s; }
+      .route-anim-path.p3 { --dash-len:240; animation-delay:1.2s; }
+      .route-anim-path.p4 { --dash-len:160; animation-delay:1.9s; }
+
+      ::-webkit-scrollbar { width: 5px; height: 5px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 3px; }
+
+      @media print {
+        #topbar, #tab-nav, #footer-bar { display: none !important; }
+        .view { display: block !important; }
+        body { background: #fff; color: #000; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="topbar">
+      <a href="/" class="back-link">← HOME</a>
+      <div class="topbar-title">MUNNAR <span>ANNIVERSARY</span></div>
+    </div>
+
+    <div id="tab-nav">
+      <button class="tab-btn active" onclick="showTab('overview')">🗺️ OVERVIEW</button>
+      <button class="tab-btn" onclick="showTab('timeline')">📅 TIMELINE</button>
+      <button class="tab-btn" onclick="showTab('checklists')">✅ CHECKLISTS</button>
+      <button class="tab-btn" onclick="showTab('risks')">⚠️ RISKS</button>
+    </div>
+
+    <!-- ═══ OVERVIEW ═══ -->
+    <div id="view-overview" class="view active">
+      <div class="hero-banner">
+        <!-- Mountain silhouette -->
+        <svg class="hero-mountain" viewBox="0 0 780 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="120">
+          <defs>
+            <linearGradient id="mtn-grad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#0d3320" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#080a08" stop-opacity="0.7"/>
+            </linearGradient>
+          </defs>
+          <path d="M0 120 L0 80 L60 55 L130 70 L200 35 L270 60 L320 20 L380 48 L440 15 L500 40 L560 28 L620 52 L680 38 L730 58 L780 45 L780 120 Z" fill="url(#mtn-grad)" opacity="0.7"/>
+          <path d="M0 120 L0 95 L80 82 L160 90 L240 68 L310 84 L390 58 L460 75 L540 52 L610 70 L680 58 L740 74 L780 64 L780 120 Z" fill="url(#mtn-grad)"/>
+          <g fill="#0d3320" opacity="0.7">
+            <path d="M100 90 L106 74 L112 90Z"/><path d="M114 90 L120 76 L126 90Z"/>
+            <path d="M550 68 L556 52 L562 68Z"/><path d="M564 68 L570 55 L576 68Z"/>
+          </g>
+          <rect x="0" y="113" width="780" height="7" fill="rgba(68,255,136,0.03)"/>
+        </svg>
+
+        <div class="hero-content" style="padding-bottom:60px">
+          <!-- Bike SVG -->
+          <svg class="hero-bike-svg" width="90" height="48" viewBox="0 0 90 48" xmlns="http://www.w3.org/2000/svg">
+            <defs><filter id="bike-glow"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <g filter="url(#bike-glow)" stroke="#44ff88" stroke-width="2" fill="none">
+              <circle cx="18" cy="34" r="12" stroke-width="2.5"/>
+              <circle cx="72" cy="34" r="12" stroke-width="2.5"/>
+              <line x1="18" y1="22" x2="18" y2="46" stroke="rgba(68,255,136,0.3)" stroke-width="1"/>
+              <line x1="6" y1="34" x2="30" y2="34" stroke="rgba(68,255,136,0.3)" stroke-width="1"/>
+              <line x1="60" y1="34" x2="84" y2="34" stroke="rgba(68,255,136,0.3)" stroke-width="1"/>
+              <line x1="72" y1="22" x2="72" y2="46" stroke="rgba(68,255,136,0.3)" stroke-width="1"/>
+              <line x1="30" y1="34" x2="45" y2="16" stroke-width="2.5"/>
+              <line x1="45" y1="16" x2="60" y2="34" stroke-width="2.5"/>
+              <line x1="30" y1="34" x2="55" y2="26" stroke-width="2"/>
+              <line x1="55" y1="26" x2="60" y2="34" stroke-width="2"/>
+              <line x1="40" y1="18" x2="56" y2="18" stroke-width="3" stroke-linecap="round"/>
+              <line x1="58" y1="17" x2="68" y2="10" stroke-width="2.5"/>
+              <line x1="65" y1="8" x2="72" y2="12" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="74" cy="27" r="4" fill="rgba(255,220,100,0.3)" stroke="#ffcc44" stroke-width="1.5"/>
+              <line x1="78" y1="25" x2="88" y2="20" stroke="#ffcc44" stroke-width="1" opacity="0.7"/>
+              <line x1="78" y1="27" x2="90" y2="27" stroke="#ffcc44" stroke-width="1" opacity="0.5"/>
+              <rect x="38" y="24" width="14" height="10" rx="2" fill="rgba(68,255,136,0.08)" stroke-width="1.5"/>
+            </g>
+            <g stroke="rgba(68,255,136,0.25)" stroke-width="1.5" stroke-linecap="round">
+              <line x1="0" y1="28" x2="10" y2="28"/><line x1="0" y1="33" x2="7" y2="33"/><line x1="0" y1="38" x2="12" y2="38"/>
+            </g>
+          </svg>
+
+          <div class="hero-title">MUNNAR <span>ANNIVERSARY</span> RIDE</div>
+          <div class="hero-sub">KABI &amp; DEVA · PULSAR N150</div>
+          <div class="hero-date">02 – 05 JULY 2026</div>
+          <div class="hero-badge-row">
+            <span class="hero-badge dist">📍 ~130 KM</span>
+            <span class="hero-badge night">🌄 KOLUKKUMALAI</span>
+            <span class="hero-badge mon">☕ TEA COUNTRY</span>
+            <span class="hero-badge ann">❤️ ANNIVERSARY</span>
+          </div>
+
+          <div class="countdown-wrap" id="countdown-wrap">
+            <div class="countdown-label">🏍️ departure in</div>
+            <div class="countdown-units">
+              <div class="cd-unit"><div class="cd-num" id="cd-days">--</div><div class="cd-lbl">DAYS</div></div>
+              <div class="cd-sep">:</div>
+              <div class="cd-unit"><div class="cd-num" id="cd-hrs">--</div><div class="cd-lbl">HRS</div></div>
+              <div class="cd-sep">:</div>
+              <div class="cd-unit"><div class="cd-num" id="cd-min">--</div><div class="cd-lbl">MIN</div></div>
+              <div class="cd-sep">:</div>
+              <div class="cd-unit"><div class="cd-num" id="cd-sec">--</div><div class="cd-lbl">SEC</div></div>
+            </div>
+            <div class="countdown-date">02 JULY 2026 · 18:00 · MACHDATUM OFFICE</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pw">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-val green">~130</div><div class="stat-lbl">Total KM</div></div>
+          <div class="stat-card"><div class="stat-val amber">4</div><div class="stat-lbl">Days</div></div>
+          <div class="stat-card"><div class="stat-val pink">3</div><div class="stat-lbl">Nights</div></div>
+          <div class="stat-card"><div class="stat-val blue">2100m</div><div class="stat-lbl">Kolukkumalai</div></div>
+        </div>
+
+        <div class="sec-label">ROUTE</div>
+        <div class="route-map-wrap">
+          <div class="route-svg-container">
+            <svg viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:680px">
+              <defs>
+                <filter id="node-glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                <filter id="hwy-glow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                <linearGradient id="ghat-grad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#228855"/><stop offset="100%" stop-color="#44ff88"/>
+                </linearGradient>
+                <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z" fill="#44aaff" opacity="0.6"/>
+                </marker>
+              </defs>
+
+              <!-- Segment glow shadows -->
+              <path d="M 40 100 L 190 100" stroke="#2266aa" stroke-width="7" stroke-linecap="round" fill="none" opacity="0.12" filter="url(#hwy-glow)"/>
+              <path d="M 430 100 C 470 120 510 148 560 115 C 590 98 610 80 640 100" stroke="#228855" stroke-width="8" fill="none" opacity="0.12" filter="url(#hwy-glow)"/>
+
+              <!-- Animated road segments -->
+              <!-- Day 1: Office → Pollachi -->
+              <path class="route-anim-path p1" d="M 40 100 L 190 100" stroke="#2266aa" stroke-width="3" stroke-linecap="round" fill="none" marker-end="url(#arrow)"/>
+              <!-- Day 2 leg 1: Pollachi → Udumalpet -->
+              <path class="route-anim-path p2" d="M 190 100 L 320 100" stroke="#226644" stroke-width="3" stroke-linecap="round" fill="none" marker-end="url(#arrow)"/>
+              <!-- Day 2 leg 2: Udumalpet → Chinnar (ghat starts) -->
+              <path class="route-anim-path p3" d="M 320 100 C 360 100 380 85 410 70 C 430 60 440 75 470 100" stroke="#aa5500" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+              <!-- Day 2 leg 3: Chinnar → Munnar (steep ghat, Kerala) -->
+              <path class="route-anim-path p4" d="M 470 100 C 500 120 520 148 555 118 C 580 100 605 78 640 100" stroke="url(#ghat-grad)" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+
+              <!-- Road center dashes -->
+              <path d="M 45 100 L 185 100" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="8,6" fill="none"/>
+              <path d="M 195 100 L 315 100" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="8,6" fill="none"/>
+
+              <!-- Distance labels -->
+              <text x="115" y="88" fill="#5599dd" font-family="DM Mono,monospace" font-size="9" text-anchor="middle">~45 km</text>
+              <text x="255" y="88" fill="#449966" font-family="DM Mono,monospace" font-size="9" text-anchor="middle">~35 km</text>
+              <text x="395" y="55" fill="#cc6622" font-family="DM Mono,monospace" font-size="9" text-anchor="middle">GHAT ZONE</text>
+              <text x="555" y="165" fill="#44cc88" font-family="DM Mono,monospace" font-size="9" text-anchor="middle">KERALA SIDE</text>
+
+              <!-- Day 1 / Night badge -->
+              <rect x="60" y="112" width="90" height="16" rx="4" fill="rgba(100,68,187,0.18)" stroke="#6644bb" stroke-width="0.8"/>
+              <text x="105" y="124" fill="#aa88ff" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">🌙 DAY 1 NIGHT</text>
+
+              <!-- ── City nodes ── -->
+              <!-- START: Office / Ondipudur -->
+              <circle cx="40" cy="100" r="14" fill="#071828" stroke="#4488cc" stroke-width="2.5" filter="url(#node-glow)"/>
+              <circle cx="40" cy="100" r="18" fill="none" stroke="#4488cc" stroke-width="0.5" opacity="0.3"/>
+              <text x="40" y="105" fill="#fff" font-size="12" text-anchor="middle">🏢</text>
+              <text x="40" y="128" fill="#aaccee" font-family="DM Mono,monospace" font-size="8" text-anchor="middle" font-weight="bold">OFFICE</text>
+              <text x="40" y="139" fill="#ffcc44" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">18:00</text>
+
+              <!-- Pollachi / Night halt -->
+              <circle cx="190" cy="100" r="14" fill="#120d28" stroke="#6644bb" stroke-width="2.5" filter="url(#node-glow)"/>
+              <circle cx="190" cy="100" r="18" fill="none" stroke="#6644bb" stroke-width="0.5" opacity="0.3"/>
+              <text x="190" y="105" fill="#fff" font-size="12" text-anchor="middle">🏨</text>
+              <text x="190" y="128" fill="#bb99ff" font-family="DM Mono,monospace" font-size="8" text-anchor="middle" font-weight="bold">POLLACHI</text>
+              <text x="190" y="139" fill="#aa88ff" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">NIGHT HALT</text>
+
+              <!-- Udumalpet -->
+              <circle cx="320" cy="100" r="11" fill="#0f2810" stroke="#44aa44" stroke-width="2" filter="url(#node-glow)"/>
+              <text x="320" y="105" fill="#fff" font-size="11" text-anchor="middle">⛽</text>
+              <text x="320" y="123" fill="#88cc88" font-family="DM Mono,monospace" font-size="8" text-anchor="middle" font-weight="bold">UDUMALPET</text>
+              <text x="320" y="133" fill="#ffcc44" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">~05:45</text>
+
+              <!-- Chinnar Gate -->
+              <circle cx="470" cy="100" r="11" fill="#1a0a02" stroke="#aa5500" stroke-width="2" filter="url(#node-glow)"/>
+              <text x="470" y="105" fill="#fff" font-size="11" text-anchor="middle">🌿</text>
+              <text x="470" y="123" fill="#ddaa44" font-family="DM Mono,monospace" font-size="8" text-anchor="middle" font-weight="bold">CHINNAR</text>
+              <text x="470" y="133" fill="#ffcc44" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">GHAT STARTS</text>
+
+              <!-- MUNNAR — destination star -->
+              <circle cx="640" cy="100" r="16" fill="#071a10" stroke="#44ff88" stroke-width="3" filter="url(#node-glow)"/>
+              <circle cx="640" cy="100" r="21" fill="none" stroke="#44ff88" stroke-width="0.8" opacity="0.4" style="animation:pulse 1.5s ease-in-out infinite"/>
+              <text x="640" y="105" fill="#fff" font-size="14" text-anchor="middle">☕</text>
+              <text x="640" y="128" fill="#44ff88" font-family="DM Mono,monospace" font-size="8" text-anchor="middle" font-weight="bold">MUNNAR</text>
+              <text x="640" y="139" fill="#ffcc44" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">~09:00 · 1600m</text>
+
+              <!-- Kolukkumalai branch -->
+              <line x1="640" y1="60" x2="640" y2="84" stroke="#44ff88" stroke-width="1.5" stroke-dasharray="3,2"/>
+              <circle cx="640" cy="48" r="11" fill="#061a0a" stroke="#44ff88" stroke-width="2" filter="url(#node-glow)"/>
+              <text x="640" y="53" fill="#fff" font-size="11" text-anchor="middle">🌄</text>
+              <text x="662" y="46" fill="#44ff88" font-family="DM Mono,monospace" font-size="8">KOLUKKUMALAI</text>
+              <text x="662" y="57" fill="#33aa66" font-family="DM Mono,monospace" font-size="7">DAY 3 · 2100m</text>
+
+              <!-- Elevation bars -->
+              <g opacity="0.35">
+                <rect x="20" y="178" width="40" height="5" rx="2" fill="#4488cc"/>
+                <rect x="170" y="176" width="40" height="7" rx="2" fill="#6644bb"/>
+                <rect x="300" y="174" width="40" height="9" rx="2" fill="#44aa44"/>
+                <rect x="450" y="170" width="40" height="13" rx="2" fill="#aa5500"/>
+                <rect x="618" y="158" width="44" height="25" rx="2" fill="#44ff88"/>
+                <text x="640" y="174" fill="#44ff88" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">~1600m</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <div class="sec-label">ELEVATION PROFILE</div>
+        <div class="elev-wrap">
+          <svg viewBox="0 0 600 110" xmlns="http://www.w3.org/2000/svg" width="100%">
+            <defs>
+              <linearGradient id="elev-grad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#44ff88" stop-opacity="0.7"/>
+                <stop offset="40%" stop-color="#44cc88" stop-opacity="0.4"/>
+                <stop offset="100%" stop-color="#44ff88" stop-opacity="0.05"/>
+              </linearGradient>
+              <linearGradient id="elev-line-grad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#44aaff"/>
+                <stop offset="35%" stop-color="#44aaff"/>
+                <stop offset="60%" stop-color="#aa5500"/>
+                <stop offset="100%" stop-color="#44ff88"/>
+              </linearGradient>
+              <clipPath id="elev-clip"><rect x="40" y="0" width="555" height="88"/></clipPath>
+            </defs>
+            <line x1="40" y1="10" x2="595" y2="10" stroke="#1c221c" stroke-width="0.8"/>
+            <line x1="40" y1="32" x2="595" y2="32" stroke="#1c221c" stroke-width="0.8"/>
+            <line x1="40" y1="54" x2="595" y2="54" stroke="#1c221c" stroke-width="0.8"/>
+            <line x1="40" y1="76" x2="595" y2="76" stroke="#1c221c" stroke-width="0.8"/>
+            <text x="36" y="13" fill="#566254" font-family="DM Mono,monospace" font-size="8" text-anchor="end">2100m</text>
+            <text x="36" y="35" fill="#566254" font-family="DM Mono,monospace" font-size="8" text-anchor="end">1400m</text>
+            <text x="36" y="57" fill="#566254" font-family="DM Mono,monospace" font-size="8" text-anchor="end">700m</text>
+            <text x="36" y="79" fill="#566254" font-family="DM Mono,monospace" font-size="8" text-anchor="end">0m</text>
+            <!-- Area fill: starts flat, rises sharply from Chinnar -->
+            <path class="elev-area" d="
+              M 45 74 L 130 72 L 195 74 L 260 72 L 320 70
+              L 370 65 L 400 55 L 430 42 L 460 28 L 490 18
+              L 515 12 L 540 76 L 45 76 Z"
+              fill="url(#elev-grad)" clip-path="url(#elev-clip)"/>
+            <path class="elev-line" d="
+              M 45 74 L 130 72 L 195 74 L 260 72 L 320 70
+              L 370 65 L 400 55 L 430 42 L 460 28 L 490 18 L 515 12"
+              stroke="url(#elev-line-grad)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" clip-path="url(#elev-clip)"/>
+            <!-- City markers -->
+            <g font-family="DM Mono,monospace" font-size="8">
+              <circle cx="45" cy="74" r="4" fill="#4488cc"/>
+              <text x="45" y="90" fill="#5599cc" text-anchor="middle">CBE</text>
+              <circle cx="195" cy="74" r="4" fill="#6644bb"/>
+              <text x="195" y="90" fill="#9966ee" text-anchor="middle">PLI</text>
+              <circle cx="320" cy="70" r="4" fill="#44aa44"/>
+              <text x="320" y="90" fill="#44aa44" text-anchor="middle">UDM</text>
+              <circle cx="430" cy="42" r="4" fill="#cc7700"/>
+              <text x="430" y="90" fill="#ddaa44" text-anchor="middle">CHINNAR</text>
+              <circle cx="515" cy="12" r="6" fill="#44ff88" stroke="#66ffaa" stroke-width="1.5"/>
+              <text x="515" y="90" fill="#44ff88" text-anchor="middle" font-weight="bold">MUNNAR</text>
+            </g>
+            <line x1="515" y1="17" x2="515" y2="6" stroke="#44ff88" stroke-width="1" stroke-dasharray="2,2"/>
+            <text x="517" y="9" fill="#44ff88" font-family="DM Mono,monospace" font-size="7">~1600m ASL</text>
+            <rect x="390" y="0" width="160" height="88" fill="rgba(68,255,136,0.03)" clip-path="url(#elev-clip)"/>
+            <text x="465" y="99" fill="#228855" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">⚠ GHAT SECTION</text>
+          </svg>
+        </div>
+
+        <div class="sec-label">OBJECTIVE</div>
+        <div style="background:rgba(68,255,136,0.04);border:1px solid rgba(68,255,136,0.15);border-radius:var(--r);padding:16px 18px;font-family:var(--fm);font-size:12px;color:var(--muted2);line-height:1.7;">
+          <div style="color:var(--green);font-size:10px;letter-spacing:2px;margin-bottom:8px;">GUIDING PRINCIPLE</div>
+          A relaxed anniversary ride focused on <span style="color:var(--text)">experiences, safety, quality time</span>, and memorable roads rather than maximising tourist attractions.<br><br>
+          <span style="color:var(--amber)">Friday</span> is for settling into Munnar.&nbsp;&nbsp;<span style="color:var(--green)">Saturday</span> is the adventure day.&nbsp;&nbsp;<span style="color:var(--purple)">Kolukkumalai sunrise first</span> — everything else is optional.
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ TIMELINE ═══ -->
+    <div id="view-timeline" class="view">
+      <div class="pw">
+
+        <!-- DAY 1 -->
+        <div class="day-header day1">
+          <div class="day-header-emoji">🌙</div>
+          <div class="day-header-info">
+            <div class="day-header-title">DAY 1 — DEPARTURE EVENING</div>
+            <div class="day-header-date">THURSDAY · 02 JULY 2026 · ONDIPUDUR → POLLACHI (~45 km)</div>
+          </div>
+          <div class="day-header-badge">EASY RIDE</div>
+        </div>
+        <div class="timeline">
+          <div class="tl-line"></div>
+          <div class="tl-block travel">
+            <div class="tl-top"><div class="tl-block-time">18:00</div><div class="tl-block-name">Leave MachDatum Office</div><div class="tl-block-type">TRAVEL</div></div>
+            <div class="tl-note">Full tank before departure · confirm luggage secured · both rain gears packed</div>
+          </div>
+          <div class="tl-block food">
+            <div class="tl-top"><div class="tl-block-time">19:00</div><div class="tl-block-name">Tea Break en Route</div><div class="tl-block-type">FOOD</div></div>
+            <div class="tl-note">Quick stop · stretch legs · check luggage straps after first ~40 km</div>
+          </div>
+          <div class="tl-block rest">
+            <div class="tl-top"><div class="tl-block-time">20:15</div><div class="tl-block-name">Reach Pollachi — Hotel Check-in</div><div class="tl-block-type">REST</div></div>
+            <div class="tl-note">Night halt at Pollachi hotel · ~45 km total from office · arrive relaxed</div>
+          </div>
+          <div class="tl-block activity">
+            <div class="tl-top"><div class="tl-block-time">20:30 – 21:30</div><div class="tl-block-name">Dinner &amp; Walk / Short Ride Around Town</div><div class="tl-block-type">ACTIVITY</div></div>
+          </div>
+          <div class="tl-block rest">
+            <div class="tl-top"><div class="tl-block-time">22:00</div><div class="tl-block-name">Sleep</div><div class="tl-block-type">REST</div></div>
+            <div class="tl-note">Early wake-up tomorrow at 04:00 — do not stay up late</div>
+          </div>
+        </div>
+
+        <!-- DAY 2 -->
+        <div class="day-header day2">
+          <div class="day-header-emoji">🌿</div>
+          <div class="day-header-info">
+            <div class="day-header-title">DAY 2 — RIDE TO MUNNAR</div>
+            <div class="day-header-date">FRIDAY · 03 JULY 2026 · POLLACHI → MUNNAR (~90 km)</div>
+          </div>
+          <div class="day-header-badge">GHAT DAY</div>
+        </div>
+        <div class="timeline">
+          <div class="tl-line"></div>
+          <div class="tl-block travel">
+            <div class="tl-top"><div class="tl-block-time">04:00</div><div class="tl-block-name">Depart Pollachi</div><div class="tl-block-type">TRAVEL</div></div>
+            <div class="tl-note">Early morning start · pre-dawn ride through Udumalpet plains · light traffic</div>
+          </div>
+          <div class="tl-block travel">
+            <div class="tl-top"><div class="tl-block-time">05:45</div><div class="tl-block-name">Reach Udumalpet</div><div class="tl-block-type">TRAVEL</div></div>
+            <div class="tl-note">Fuel stop if needed · quick snack break · ~35 km from Pollachi</div>
+          </div>
+          <div class="tl-block trek">
+            <div class="tl-top"><div class="tl-block-time">06:00 – 08:30</div><div class="tl-block-name">Chinnar &amp; Marayoor Ride Section</div><div class="tl-block-type">GHAT</div></div>
+            <div class="tl-note">Most scenic leg — Chinnar Wildlife Sanctuary gates · sandalwood forests of Marayoor · early morning mist · wildlife crossing zones — slow down</div>
+          </div>
+          <div class="tl-block food">
+            <div class="tl-top"><div class="tl-block-time">09:00</div><div class="tl-block-name">Reach Munnar — Breakfast</div><div class="tl-block-type">FOOD</div></div>
+            <div class="tl-note">Breakfast at a local café in Munnar town · well deserved after the ghat ride</div>
+          </div>
+          <div class="tl-block activity">
+            <div class="tl-top"><div class="tl-block-time">09:00 – 12:00</div><div class="tl-block-name">Light Exploration Near Town</div><div class="tl-block-type">ACTIVITY</div></div>
+            <div class="tl-note">Walk around Munnar town · local market · KSRTC stand area · no planned agenda</div>
+          </div>
+          <div class="tl-block rest">
+            <div class="tl-top"><div class="tl-block-time">12:00</div><div class="tl-block-name">Hotel Check-in &amp; Freshen Up</div><div class="tl-block-type">REST</div></div>
+            <div class="tl-note">1.5 hrs to unpack, shower, rest</div>
+          </div>
+          <div class="tl-block activity">
+            <div class="tl-top"><div class="tl-block-time">13:30 – 18:00</div><div class="tl-block-name">Tea Estates, Viewpoints &amp; Waterfalls</div><div class="tl-block-type">ACTIVITY</div></div>
+            <div class="tl-note">Tata Tea Museum · Attukad Waterfalls (5 km from town) · scenic viewpoints · evening ride through tea gardens</div>
+          </div>
+          <div class="tl-block food">
+            <div class="tl-top"><div class="tl-block-time">18:00+</div><div class="tl-block-name">Dinner, Games &amp; Conversations</div><div class="tl-block-type">FOOD</div></div>
+            <div class="tl-note">Early sleep for Day 3 — Kolukkumalai wake-up is 04:00</div>
+          </div>
+        </div>
+
+        <!-- DAY 3 -->
+        <div class="day-header day3">
+          <div class="day-header-emoji">🌄</div>
+          <div class="day-header-info">
+            <div class="day-header-title">DAY 3 — MAIN ADVENTURE</div>
+            <div class="day-header-date">SATURDAY · 04 JULY 2026 · KOLUKKUMALAI MISSION</div>
+          </div>
+          <div class="day-header-badge">BIG DAY</div>
+        </div>
+        <div class="timeline">
+          <div class="tl-line"></div>
+          <div class="tl-block rest">
+            <div class="tl-top"><div class="tl-block-time">04:00</div><div class="tl-block-name">Wake Up</div><div class="tl-block-type">REST</div></div>
+            <div class="tl-note">Prepare for Kolukkumalai · warm layers recommended · 2100m altitude — cold and windy</div>
+          </div>
+          <div class="tl-block trek">
+            <div class="tl-top"><div class="tl-block-time">05:00+</div><div class="tl-block-name">🌄 KOLUKKUMALAI SUNRISE MISSION</div><div class="tl-block-type">PRIORITY #1</div></div>
+            <div class="tl-note">Highest tea estate in the world · ~32 km from Munnar · jeep track for last stretch · sunrise from 2100m ASL · this is the dream destination — do not skip for any reason</div>
+          </div>
+          <div class="tl-block activity">
+            <div class="tl-top"><div class="tl-block-time">Morning</div><div class="tl-block-name">Top Station</div><div class="tl-block-type">ACTIVITY</div></div>
+            <div class="tl-note">32 km from Munnar · Kerala-Tamil Nadu border viewpoint · panoramic valley views</div>
+          </div>
+          <div class="tl-block activity">
+            <div class="tl-top"><div class="tl-block-time">Late Morning</div><div class="tl-block-name">Mattupetty Dam</div><div class="tl-block-type">ACTIVITY</div></div>
+            <div class="tl-note">13 km from Munnar · scenic reservoir · boat rides optional · nice backdrop for photos</div>
+          </div>
+          <div class="tl-block activity">
+            <div class="tl-top"><div class="tl-block-time">Midday</div><div class="tl-block-name">Echo Point</div><div class="tl-block-type">ACTIVITY</div></div>
+            <div class="tl-note">15 km from Munnar · natural echo near Mattupetty lake</div>
+          </div>
+          <div class="tl-block activity">
+            <div class="tl-top"><div class="tl-block-time">Afternoon</div><div class="tl-block-name">Kundala Lake</div><div class="tl-block-type">ACTIVITY</div></div>
+            <div class="tl-note">Peaceful shikara rides · 20 km from Munnar · tranquil — perfect anniversary spot ❤️</div>
+          </div>
+          <div class="tl-block rest">
+            <div class="tl-top"><div class="tl-block-time">18:00</div><div class="tl-block-name">Return to Hotel</div><div class="tl-block-type">REST</div></div>
+          </div>
+          <div class="tl-block food">
+            <div class="tl-top"><div class="tl-block-time">Evening</div><div class="tl-block-name">Dinner, Games &amp; Photo Review</div><div class="tl-block-type">FOOD</div></div>
+          </div>
+        </div>
+
+        <!-- DAY 4 -->
+        <div class="day-header day4">
+          <div class="day-header-emoji">🏠</div>
+          <div class="day-header-info">
+            <div class="day-header-title">DAY 4 — RETURN</div>
+            <div class="day-header-date">SUNDAY · 05 JULY 2026 · MUNNAR → ONDIPUDUR</div>
+          </div>
+          <div class="day-header-badge">HOME RUN</div>
+        </div>
+        <div class="timeline">
+          <div class="tl-line"></div>
+          <div class="tl-block travel">
+            <div class="tl-top"><div class="tl-block-time">Stage 1</div><div class="tl-block-name">Munnar → Marayoor</div><div class="tl-block-type">TRAVEL</div></div>
+          </div>
+          <div class="tl-block travel">
+            <div class="tl-top"><div class="tl-block-time">Stage 2</div><div class="tl-block-name">Marayoor → Chinnar</div><div class="tl-block-type">TRAVEL</div></div>
+            <div class="tl-note">Ghat descent — take it easy · mist possible in morning · wildlife crossings</div>
+          </div>
+          <div class="tl-block travel">
+            <div class="tl-top"><div class="tl-block-time">Stage 3</div><div class="tl-block-name">Chinnar → Udumalpet</div><div class="tl-block-type">TRAVEL</div></div>
+          </div>
+          <div class="tl-block travel">
+            <div class="tl-top"><div class="tl-block-time">Stage 4</div><div class="tl-block-name">Udumalpet → Senjeri</div><div class="tl-block-type">TRAVEL</div></div>
+          </div>
+          <div class="tl-block travel">
+            <div class="tl-top"><div class="tl-block-time">Stage 5</div><div class="tl-block-name">Senjeri → Ondipudur</div><div class="tl-block-type">TRAVEL</div></div>
+          </div>
+          <div class="tl-block activity">
+            <div class="tl-top"><div class="tl-block-time">Stage 6</div><div class="tl-block-name">Drop Deva</div><div class="tl-block-type">—</div></div>
+          </div>
+          <div class="tl-block travel">
+            <div class="tl-top"><div class="tl-block-time">Stage 7</div><div class="tl-block-name">Ondipudur → Karumathampatty</div><div class="tl-block-type">TRAVEL</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══ CHECKLISTS ═══ -->
+    <div id="view-checklists" class="view">
+      <div class="pw">
+
+        <!-- Overall header -->
+        <div style="margin-top:20px" class="checklist-header">
+          <svg class="checklist-progress-ring" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#1c221c" stroke-width="7"/>
+            <circle id="ring-circle" cx="40" cy="40" r="32" fill="none" stroke="#44ff88" stroke-width="7" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)" class="ring-track"/>
+            <text x="40" y="45" fill="#44ff88" font-family="Bebas Neue,sans-serif" font-size="18" text-anchor="middle" id="ring-pct">0%</text>
+          </svg>
+          <div class="checklist-header-info">
+            <div class="checklist-header-title">PACKING + PREP</div>
+            <div class="checklist-header-sub">Munnar Anniversary Ride · 02–05 July 2026</div>
+            <div class="checklist-progress-text" id="cl-progress-text">0 of 0 items</div>
+          </div>
+        </div>
+
+        <!-- To Buy -->
+        <div class="cl-category">
+          <span class="cl-cat-label">🛒 TO BUY</span>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="a1">
+            <div class="cl-check"></div>
+            <div class="cl-text">Mobile holder</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="a2">
+            <div class="cl-check"></div>
+            <div class="cl-text">Top rack</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="a3">
+            <div class="cl-check"></div>
+            <div class="cl-text">Tank cover</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="a4">
+            <div class="cl-check"></div>
+            <div class="cl-text">Rope</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="a5">
+            <div class="cl-check"></div>
+            <div class="cl-text">Dresses</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="a6">
+            <div class="cl-check"></div>
+            <div class="cl-text">Tablets — Cetirizine &amp; Dolo</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="a7">
+            <div class="cl-check"></div>
+            <div class="cl-text">Bag</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="a8">
+            <div class="cl-check"></div>
+            <div class="cl-text">Hard disk</div>
+            <div class="cl-mandatory opt">OPT</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="a9">
+            <div class="cl-check"></div>
+            <div class="cl-text">Sunscreen</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+        </div>
+
+        <!-- Bike Preparation -->
+        <div class="cl-category">
+          <span class="cl-cat-label">🏍️ BIKE PREPARATION</span>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="b1">
+            <div class="cl-check"></div>
+            <div class="cl-text">Front tyre pressure — 25 PSI</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="b2">
+            <div class="cl-check"></div>
+            <div class="cl-text">Rear tyre pressure — 32–33 PSI</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="b3">
+            <div class="cl-check"></div>
+            <div class="cl-text">Full tank before departure from office</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="b4">
+            <div class="cl-check"></div>
+            <div class="cl-text">Luggage strapped — recheck after first 10 km</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="b5">
+            <div class="cl-check"></div>
+            <div class="cl-text">Lights, horn, brakes working</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="b6">
+            <div class="cl-check"></div>
+            <div class="cl-text">Engine oil level OK</div>
+            <div class="cl-mandatory opt">OPT</div>
+          </div>
+        </div>
+
+        <!-- Documents -->
+        <div class="cl-category">
+          <span class="cl-cat-label">📄 DOCUMENTS</span>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="d1">
+            <div class="cl-check"></div>
+            <div class="cl-text">Physical RC + DL + insurance</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="d2">
+            <div class="cl-check"></div>
+            <div class="cl-text">Digital copies on phone (Digilocker / photos)</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="d3">
+            <div class="cl-check"></div>
+            <div class="cl-text">Hotel booking confirmations (both nights)</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="d4">
+            <div class="cl-check"></div>
+            <div class="cl-text">Emergency contacts noted (offline)</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+        </div>
+
+        <!-- Packing List -->
+        <div class="cl-category">
+          <span class="cl-cat-label">🧳 WHAT TO CARRY</span>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="p1">
+            <div class="cl-check"></div>
+            <div class="cl-text">Water bottles</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="p2">
+            <div class="cl-check"></div>
+            <div class="cl-text">Rain coats (both riders)</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="p3">
+            <div class="cl-check"></div>
+            <div class="cl-text">Jackets — Munnar gets cold at night &amp; Kolukkumalai is 2100m</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="p4">
+            <div class="cl-check"></div>
+            <div class="cl-text">Gloves</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="p5">
+            <div class="cl-check"></div>
+            <div class="cl-text">Power bank</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="p6">
+            <div class="cl-check"></div>
+            <div class="cl-text">Chargers (phone + any other)</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="p7">
+            <div class="cl-check"></div>
+            <div class="cl-text">Dresses (4 days)</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="p8">
+            <div class="cl-check"></div>
+            <div class="cl-text">Napkins / towels</div>
+            <div class="cl-mandatory must">MUST</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="p9">
+            <div class="cl-check"></div>
+            <div class="cl-text">Skin care</div>
+            <div class="cl-mandatory opt">OPT</div>
+          </div>
+          <div class="cl-item" onclick="toggleItem(this)" data-id="p10">
+            <div class="cl-check"></div>
+            <div class="cl-text">Carry bags to separate used clothes</div>
+            <div class="cl-mandatory opt">OPT</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══ RISKS ═══ -->
+    <div id="view-risks" class="view">
+      <div class="pw">
+        <div class="sec-label" style="padding-top:20px">RISK REGISTER</div>
+
+        <div class="risk-card">
+          <div class="risk-card-header">
+            <div class="risk-level-bar high"></div>
+            <div class="risk-icon">🌧️</div>
+            <div class="risk-info">
+              <div class="risk-name">Monsoon Rain — Ghat Sections</div>
+              <span class="risk-level-tag high">HIGH</span>
+            </div>
+          </div>
+          <div class="risk-body">
+            <div class="risk-when">When: Day 2 Chinnar–Munnar section &amp; Day 4 return · July is peak monsoon</div>
+            <div class="risk-mitigation">
+              <div class="risk-mit-item">Rain gear on before entering ghats — not mid-ride</div>
+              <div class="risk-mit-item">Reduce speed to 30–40 km/h in heavy rain</div>
+              <div class="risk-mit-item">Pull over and wait if visibility drops below 50m</div>
+              <div class="risk-mit-item">Check tyres — wet ghats demand 100% tread</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="risk-card">
+          <div class="risk-card-header">
+            <div class="risk-level-bar high"></div>
+            <div class="risk-icon">🐘</div>
+            <div class="risk-info">
+              <div class="risk-name">Wildlife Crossing — Chinnar–Marayoor Zone</div>
+              <span class="risk-level-tag high">HIGH</span>
+            </div>
+          </div>
+          <div class="risk-body">
+            <div class="risk-when">When: Early morning Day 2 (04:00–08:00) and Day 4 return</div>
+            <div class="risk-mitigation">
+              <div class="risk-mit-item">Do not use full beam at corners — blind animals</div>
+              <div class="risk-mit-item">Speed limit 20–30 km/h through Chinnar sanctuary zone</div>
+              <div class="risk-mit-item">If elephant spotted — stop engine, wait, do not honk</div>
+              <div class="risk-mit-item">Dawn and dusk are peak wildlife movement times — stay alert</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="risk-card">
+          <div class="risk-card-header">
+            <div class="risk-level-bar medium"></div>
+            <div class="risk-icon">🌫️</div>
+            <div class="risk-info">
+              <div class="risk-name">Low Visibility — Fog at Altitude</div>
+              <span class="risk-level-tag medium">MEDIUM</span>
+            </div>
+          </div>
+          <div class="risk-body">
+            <div class="risk-when">When: Kolukkumalai early morning (05:00) and high altitude roads</div>
+            <div class="risk-mitigation">
+              <div class="risk-mit-item">Use low beam — not high beam in fog</div>
+              <div class="risk-mit-item">Wear warm layers — cold at 2100m even in July</div>
+              <div class="risk-mit-item">Stay behind local jeeps on narrow trails if possible</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="risk-card">
+          <div class="risk-card-header">
+            <div class="risk-level-bar medium"></div>
+            <div class="risk-icon">🛣️</div>
+            <div class="risk-info">
+              <div class="risk-name">Road Conditions — Ghat Hairpins</div>
+              <span class="risk-level-tag medium">MEDIUM</span>
+            </div>
+          </div>
+          <div class="risk-body">
+            <div class="risk-when">When: Chinnar → Munnar ascent and Munnar → Marayoor descent</div>
+            <div class="risk-mitigation">
+              <div class="risk-mit-item">Downshift before corners — do not brake mid-turn on wet road</div>
+              <div class="risk-mit-item">Horn at blind turns — vehicles come fast from opposite side</div>
+              <div class="risk-mit-item">Keep left — not middle of road on hairpins</div>
+              <div class="risk-mit-item">Take rest breaks on long descents — brake fade risk</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="risk-card">
+          <div class="risk-card-header">
+            <div class="risk-level-bar low"></div>
+            <div class="risk-icon">⛽</div>
+            <div class="risk-info">
+              <div class="risk-name">Fuel Availability</div>
+              <span class="risk-level-tag low">LOW</span>
+            </div>
+          </div>
+          <div class="risk-body">
+            <div class="risk-when">When: Chinnar to Munnar stretch has limited fuel stations</div>
+            <div class="risk-mitigation">
+              <div class="risk-mit-item">Full tank from Pollachi before Day 2 departure</div>
+              <div class="risk-mit-item">Top up at Udumalpet (05:45 stop)</div>
+              <div class="risk-mit-item">Munnar has fuel — do not stress on this</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="risk-card">
+          <div class="risk-card-header">
+            <div class="risk-level-bar low"></div>
+            <div class="risk-icon">📵</div>
+            <div class="risk-info">
+              <div class="risk-name">Network Blackout — Sanctuary Zone</div>
+              <span class="risk-level-tag low">LOW</span>
+            </div>
+          </div>
+          <div class="risk-body">
+            <div class="risk-when">When: Chinnar Wildlife Sanctuary stretch</div>
+            <div class="risk-mitigation">
+              <div class="risk-mit-item">Download offline maps (Google Maps / Maps.me) before trip</div>
+              <div class="risk-mit-item">Screenshot the entire route as backup</div>
+              <div class="risk-mit-item">BSNL often works where Airtel/Jio don't in this zone</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── FOOTER ── -->
+    <div id="footer-bar">
+      <div class="footer-inner">
+        <div class="footer-checklist-summary" id="footer-summary">Loading checklist…</div>
+        <a href="/" style="font-family:var(--fm);font-size:11px;color:var(--muted2);text-decoration:none;border:1px solid var(--b2);padding:7px 14px;border-radius:5px;white-space:nowrap;transition:color 0.15s;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted2)'">← HOME</a>
+      </div>
+    </div>
+
+    <script>
+      // ── Tab switching ──
+      function showTab(id) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('view-' + id).classList.add('active');
+        const idx = ['overview','timeline','checklists','risks'].indexOf(id);
+        document.querySelectorAll('.tab-btn')[idx]?.classList.add('active');
+      }
+
+      // ── Countdown ──
+      (function () {
+        const TARGET = new Date("2026-07-02T18:00:00+05:30").getTime();
+        const prev = {};
+        function pad(n) { return String(n).padStart(2, "0"); }
+        function tick() {
+          const diff = TARGET - Date.now();
+          const wrap = document.getElementById("countdown-wrap");
+          if (diff <= 0) {
+            ["days","hrs","min","sec"].forEach(k => {
+              const el = document.getElementById("cd-" + k);
+              if (el) el.textContent = "00";
+            });
+            if (wrap) wrap.classList.add("done");
+            return;
+          }
+          const vals = {
+            days: Math.floor(diff / 86400000),
+            hrs:  Math.floor((diff % 86400000) / 3600000),
+            min:  Math.floor((diff % 3600000) / 60000),
+            sec:  Math.floor((diff % 60000) / 1000),
+          };
+          for (const [k, num] of Object.entries(vals)) {
+            const el = document.getElementById("cd-" + k);
+            if (!el) continue;
+            const s = k === "days" ? String(num) : pad(num);
+            if (s !== prev[k]) {
+              el.textContent = s;
+              el.classList.remove("tick"); void el.offsetWidth; el.classList.add("tick");
+              prev[k] = s;
+            }
+          }
+        }
+        tick();
+        setInterval(tick, 1000);
+      })();
+
+      // ── Checklist ──
+      const STORAGE_KEY = "munnar_cl";
+      let clState = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+
+      function toggleItem(el) {
+        const id = el.dataset.id;
+        clState[id] = !clState[id];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(clState));
+        if (clState[id]) el.classList.add("checked");
+        else el.classList.remove("checked");
+        updateProgress();
+      }
+
+      function updateProgress() {
+        const items = document.querySelectorAll(".cl-item");
+        const total = items.length;
+        const done = [...items].filter(i => i.classList.contains("checked")).length;
+        const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+        const r = 32, circ = 2 * Math.PI * r;
+        const circle = document.getElementById("ring-circle");
+        if (circle) circle.setAttribute("stroke-dashoffset", circ - (circ * pct / 100));
+        const pctEl = document.getElementById("ring-pct");
+        if (pctEl) pctEl.textContent = pct + "%";
+        const txt = document.getElementById("cl-progress-text");
+        if (txt) txt.textContent = `${done} of ${total} items`;
+        const footer = document.getElementById("footer-summary");
+        if (footer) footer.innerHTML = `Checklist: <strong>${done}/${total}</strong> · ${pct}%`;
+      }
+
+      // Restore saved state
+      document.querySelectorAll(".cl-item").forEach(el => {
+        if (clState[el.dataset.id]) el.classList.add("checked");
+      });
+      updateProgress();
+    </script>
+  </body>
+</html>

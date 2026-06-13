@@ -494,7 +494,7 @@ async function renderHome() {
         <div class="confirmed-title">WE'RE GOING TO ${esc(confirmed.name.toUpperCase())} 🏍️❤️</div>
         <div class="confirmed-sub">${esc(confirmed.subtitle || '')} · ${confirmed.distance_km} km · ${esc(confirmed.duration_hrs || '')}</div>
       </div>
-      <a class="btn-open" href="/vagamon.html" style="text-decoration:none;background:var(--amber);color:#000;">🏍️ OPEN TRIP →</a>
+      <a class="btn-open" href="/munnar.html" style="text-decoration:none;background:var(--amber);color:#000;">🏍️ OPEN TRIP →</a>
     </div></div>`;
   }
 
@@ -524,7 +524,7 @@ function setFilter(tag)   { filterTag = tag; renderHome(); }
 function renderDestCard(d) {
   const tags = (d.tags||[]).map(t => `<span class="tag">${esc(t)}</span>`).join('');
   const confirmed = d.confirmed ? `<span class="tag confirmed">✓ CONFIRMED</span>` : '';
-  return `<div class="dest-card ${d.confirmed?'glow':''}" onclick="${d.confirmed ? "location.href='/vagamon.html'" : 'openDest('+d.id+')'}">
+  return `<div class="dest-card ${d.confirmed?'glow':''}"  onclick="${d.name==='Munnar'?"location.href='/munnar.html'":d.name==='Vagamon'?"location.href='/vagamon.html'":'openDest('+d.id+')'}">
     <span class="card-emoji">${d.emoji||'📍'}</span>
     <div class="card-name">${esc(d.name)}</div>
     <div class="card-sub">${esc(d.subtitle||'')}</div>

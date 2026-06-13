@@ -39,14 +39,21 @@ export type Session = { token: string; role: string }
 
 const SEED_DESTINATIONS: Destination[] = [
   {
-    id: 1, name: 'Vagamon', subtitle: 'Ghats · Monsoon · Pine Forests · Kurisimala',
+    id: 1, name: 'Munnar', subtitle: 'Tea Country · Kolukkumalai · Anniversary Ride',
+    emoji: '🌄', distance_km: 130, duration_hrs: '4–5 hrs (Ondipudur → Munnar via Chinnar)',
+    tags: ['TEA GARDENS', 'ANNIVERSARY', 'GHATS', 'KOLUKKUMALAI', 'MONSOON'],
+    confirmed: true, created_at: '2026-06-13T00:00:00Z',
+    notes: '4-day trip. Depart 02 Jul 2026 at 6:00 PM from MachDatum Office.\nNight halt: Pollachi (Day 1)\nDestination: Munnar via Chinnar–Marayoor ghat route (Day 2)\nDream: Kolukkumalai sunrise at 2100m ASL (Day 3)\nReturn: Munnar → Marayoor → Udumalpet → Ondipudur (Day 4)\nBike: Pulsar N150 — Kabi & Deva',
+  },
+  {
+    id: 2, name: 'Vagamon', subtitle: 'Ghats · Monsoon · Pine Forests · Kurisimala',
     emoji: '🏔️', distance_km: 240, duration_hrs: '6–7 hrs (split across 2 legs)',
     tags: ['GHATS', 'MONSOON', 'TREK', 'ADVENTURE', 'NIGHT RIDE'],
-    confirmed: true, created_at: '2026-03-30T01:30:37Z',
+    confirmed: false, created_at: '2026-03-30T01:30:37Z',
     notes: '2-day overnight trip. Depart 03 Jul 2026 at 6:00 PM from office.\nLeg 1: Office (MachDatum) → Thrissur (night stay)\nLeg 2: Thrissur → Vagamon (night ride, 3:00 AM)\nBike: Pulsar N 150 — Kabi & Deva\nHotels: TBD (see Stay Options section)\nDay 3: Kurisimala trek → depart straight home.',
   },
   {
-    id: 2, name: 'Wayanad', subtitle: 'Forests · Waterfalls · Wildlife',
+    id: 3, name: 'Wayanad', subtitle: 'Forests · Waterfalls · Wildlife',
     emoji: '🌿', distance_km: 350, duration_hrs: '8–9 hrs one way',
     tags: ['FOREST', 'WATERFALLS', 'WILDLIFE', 'LONG RIDE'],
     confirmed: false, created_at: '2026-03-30T01:30:37Z', notes: null,
@@ -54,11 +61,11 @@ const SEED_DESTINATIONS: Destination[] = [
 ]
 
 const SEED_SECTIONS: Section[] = [
-  { id: 1, destination_id: 1, type: 'route',      title: 'Route + Speed Zones',        icon: '🛣️', sort_order: 0 },
-  { id: 2, destination_id: 1, type: 'checklist',  title: 'Safety Checklist',           icon: '✅', sort_order: 1 },
-  { id: 3, destination_id: 1, type: 'hotels',     title: 'Stay Options',               icon: '🏨', sort_order: 2 },
-  { id: 4, destination_id: 1, type: 'activities', title: 'Activities + Weather Notes', icon: '🏔️', sort_order: 3 },
-  { id: 5, destination_id: 2, type: 'checklist',  title: 'Planning Notes',             icon: '📝', sort_order: 0 },
+  { id: 1, destination_id: 2, type: 'route',      title: 'Route + Speed Zones',        icon: '🛣️', sort_order: 0 },
+  { id: 2, destination_id: 2, type: 'checklist',  title: 'Safety Checklist',           icon: '✅', sort_order: 1 },
+  { id: 3, destination_id: 2, type: 'hotels',     title: 'Stay Options',               icon: '🏨', sort_order: 2 },
+  { id: 4, destination_id: 2, type: 'activities', title: 'Activities + Weather Notes', icon: '🏔️', sort_order: 3 },
+  { id: 5, destination_id: 3, type: 'checklist',  title: 'Planning Notes',             icon: '📝', sort_order: 0 },
 ]
 
 const SEED_ITEMS: Item[] = [

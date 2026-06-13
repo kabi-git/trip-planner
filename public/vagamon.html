@@ -1874,7 +1874,7 @@
 
           <div class="hero-title">VAGAMON <span>MONSOON</span> RIDE</div>
           <div class="hero-sub">KABI &amp; DEVA · PULSAR N150</div>
-          <div class="hero-date">03 – 05 JULY 2026</div>
+          
           <div class="hero-badge-row">
             <span class="hero-badge dist">📍 280+ KM</span>
             <span class="hero-badge night">🌙 2 NIGHT RIDES</span>
@@ -1882,31 +1882,6 @@
             <span class="hero-badge risk">⚠️ HIGH RISK</span>
           </div>
 
-          <div class="countdown-wrap" id="countdown-wrap">
-            <div class="countdown-label">🏍️ departure in</div>
-            <div class="countdown-units">
-              <div class="cd-unit">
-                <div class="cd-num" id="cd-days">--</div>
-                <div class="cd-lbl">DAYS</div>
-              </div>
-              <div class="cd-sep">:</div>
-              <div class="cd-unit">
-                <div class="cd-num" id="cd-hrs">--</div>
-                <div class="cd-lbl">HRS</div>
-              </div>
-              <div class="cd-sep">:</div>
-              <div class="cd-unit">
-                <div class="cd-num" id="cd-min">--</div>
-                <div class="cd-lbl">MIN</div>
-              </div>
-              <div class="cd-sep">:</div>
-              <div class="cd-unit">
-                <div class="cd-num" id="cd-sec">--</div>
-                <div class="cd-lbl">SEC</div>
-              </div>
-            </div>
-            <div class="countdown-date">03 JULY 2026 · 18:00 · ONDIPUDUR</div>
-          </div>
         </div>
       </div>
 
@@ -2804,7 +2779,7 @@
           <div class="day-header-emoji">🌙</div>
           <div class="day-header-info">
             <div class="day-header-title">DAY 0 — DEPARTURE</div>
-            <div class="day-header-date">Friday, 03 July 2026</div>
+            
           </div>
           <div class="day-header-badge">NIGHT RIDE</div>
         </div>
@@ -2909,7 +2884,7 @@
           <div class="day-header-emoji">🌄</div>
           <div class="day-header-info">
             <div class="day-header-title">DAY 1 — GHAT ASSAULT</div>
-            <div class="day-header-date">Saturday, 04 July 2026</div>
+            
           </div>
           <div class="day-header-badge">⚠️ HIGH RISK</div>
         </div>
@@ -3151,7 +3126,7 @@
           <div class="day-header-emoji">⛰️</div>
           <div class="day-header-info">
             <div class="day-header-title">DAY 2 — KURISUMALA + RETURN</div>
-            <div class="day-header-date">Sunday, 05 July 2026</div>
+            
           </div>
           <div class="day-header-badge">TREK + 280KM HOME</div>
         </div>
@@ -3420,7 +3395,7 @@
     <!-- ═══ RISKS ═══ -->
     <div id="view-risks" class="view">
       <div class="pw">
-        <div class="sec-label">RISK ASSESSMENT — VAGAMON JULY 2026</div>
+        <div class="sec-label">RISK ASSESSMENT — VAGAMON</div>
 
         <div class="risk-card">
           <div class="risk-card-header">
@@ -4440,46 +4415,6 @@
       renderChecklist(RIDER_CHECKLIST, "rider-checklist", "blue");
       updateChecklistProgress();
 
-      // ── Countdown ──
-      (function () {
-        const TARGET = new Date("2026-07-03T18:00:00+05:30").getTime();
-        const prev = {};
-        function pad(n) {
-          return String(n).padStart(2, "0");
-        }
-        function tick() {
-          const diff = TARGET - Date.now();
-          const wrap = document.getElementById("countdown-wrap");
-          if (diff <= 0) {
-            ["days", "hrs", "min", "sec"].forEach((k) => {
-              const el = document.getElementById("cd-" + k);
-              if (el) el.textContent = "00";
-            });
-            if (wrap) wrap.classList.add("done");
-            return;
-          }
-          const vals = {
-            days: Math.floor(diff / 86400000),
-            hrs: Math.floor((diff % 86400000) / 3600000),
-            min: Math.floor((diff % 3600000) / 60000),
-            sec: Math.floor((diff % 60000) / 1000),
-          };
-          for (const [k, num] of Object.entries(vals)) {
-            const el = document.getElementById("cd-" + k);
-            if (!el) continue;
-            const s = k === "days" ? String(num) : pad(num);
-            if (s !== prev[k]) {
-              el.textContent = s;
-              el.classList.remove("tick");
-              void el.offsetWidth;
-              el.classList.add("tick");
-              prev[k] = s;
-            }
-          }
-        }
-        tick();
-        setInterval(tick, 1000);
-      })();
 
       initRain();
       setTimeout(triggerStatCountUp, 300);
