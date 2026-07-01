@@ -232,6 +232,8 @@
     <div id="tab-nav">
       <button class="tab-btn active" onclick="showTab('overview')">🗺️ OVERVIEW</button>
       <button class="tab-btn" onclick="showTab('timeline')">📅 TIMELINE</button>
+      <button class="tab-btn" onclick="showTab('attractions')">📍 ATTRACTIONS</button>
+      <button class="tab-btn" onclick="showTab('food')">🍽️ FOOD &amp; SHOPPING</button>
       <button class="tab-btn" onclick="showTab('checklists')">✅ CHECKLISTS</button>
       <button class="tab-btn" onclick="showTab('risks')">⚠️ RISKS</button>
     </div>
@@ -289,7 +291,7 @@
           <div class="hero-date">02 – 05 JULY 2026</div>
           <div class="hero-badge-row">
             <span class="hero-badge dist">📍 ~130 KM</span>
-            <span class="hero-badge night">🌄 KOLUKKUMALAI</span>
+            <span class="hero-badge night">🏔️ MISTY MOUNTAIN RESORT</span>
             <span class="hero-badge mon">☕ TEA COUNTRY</span>
             <span class="hero-badge ann">❤️ ANNIVERSARY</span>
           </div>
@@ -315,7 +317,7 @@
           <div class="stat-card"><div class="stat-val green">~130</div><div class="stat-lbl">Total KM</div></div>
           <div class="stat-card"><div class="stat-val amber">4</div><div class="stat-lbl">Days</div></div>
           <div class="stat-card"><div class="stat-val pink">3</div><div class="stat-lbl">Nights</div></div>
-          <div class="stat-card"><div class="stat-val blue">2100m</div><div class="stat-lbl">Kolukkumalai</div></div>
+          <div class="stat-card"><div class="stat-val blue">10</div><div class="stat-lbl">Essential Spots</div></div>
         </div>
 
         <div class="sec-label">ROUTE</div>
@@ -395,12 +397,12 @@
               <text x="640" y="128" fill="#44ff88" font-family="DM Mono,monospace" font-size="8" text-anchor="middle" font-weight="bold">MUNNAR</text>
               <text x="640" y="139" fill="#ffcc44" font-family="DM Mono,monospace" font-size="7" text-anchor="middle">~09:00 · 1600m</text>
 
-              <!-- Kolukkumalai branch -->
+              <!-- Chithirapuram (resort) branch -->
               <line x1="640" y1="60" x2="640" y2="84" stroke="#44ff88" stroke-width="1.5" stroke-dasharray="3,2"/>
               <circle cx="640" cy="48" r="11" fill="#061a0a" stroke="#44ff88" stroke-width="2" filter="url(#node-glow)"/>
-              <text x="640" y="53" fill="#fff" font-size="11" text-anchor="middle">🌄</text>
-              <text x="662" y="46" fill="#44ff88" font-family="DM Mono,monospace" font-size="8">KOLUKKUMALAI</text>
-              <text x="662" y="57" fill="#33aa66" font-family="DM Mono,monospace" font-size="7">DAY 3 · 2100m</text>
+              <text x="640" y="53" fill="#fff" font-size="11" text-anchor="middle">🏨</text>
+              <text x="662" y="46" fill="#44ff88" font-family="DM Mono,monospace" font-size="8">CHITHIRAPURAM</text>
+              <text x="662" y="57" fill="#33aa66" font-family="DM Mono,monospace" font-size="7">MISTY MOUNTAIN RESORT</text>
 
               <!-- Elevation bars -->
               <g opacity="0.35">
@@ -473,8 +475,9 @@
         <div class="sec-label">OBJECTIVE</div>
         <div style="background:rgba(68,255,136,0.04);border:1px solid rgba(68,255,136,0.15);border-radius:var(--r);padding:16px 18px;font-family:var(--fm);font-size:12px;color:var(--muted2);line-height:1.7;">
           <div style="color:var(--green);font-size:10px;letter-spacing:2px;margin-bottom:8px;">GUIDING PRINCIPLE</div>
-          A relaxed anniversary ride focused on <span style="color:var(--text)">experiences, safety, quality time</span>, and memorable roads rather than maximising tourist attractions.<br><br>
-          <span style="color:var(--amber)">Friday</span> is for settling into Munnar.&nbsp;&nbsp;<span style="color:var(--green)">Saturday</span> is the adventure day.&nbsp;&nbsp;<span style="color:var(--purple)">Kolukkumalai sunrise first</span> — everything else is optional.
+          This is a relaxed motorcycle tour, not a tourist checklist — <span style="color:var(--text)">scenic riding, nature, photography, food exploration, and quality time</span> over covering every attraction.<br><br>
+          Staying at <span style="color:var(--text)">Misty Mountain Resort, Chithirapuram</span>. No off-roading, no jeep safaris — just bike-friendly stops.<br><br>
+          <span style="color:var(--amber)">Friday</span> is <em>Hidden Munnar</em> — waterfalls, viewpoints, cafés, local food near town.&nbsp;&nbsp;<span style="color:var(--green)">Saturday</span> is <em>Classic Munnar Highlands</em> — tea gardens, lakes, dams, panoramic views.
         </div>
       </div>
     </div>
@@ -519,8 +522,8 @@
         <div class="day-header day2">
           <div class="day-header-emoji">🌿</div>
           <div class="day-header-info">
-            <div class="day-header-title">DAY 2 — RIDE TO MUNNAR</div>
-            <div class="day-header-date">FRIDAY · 03 JULY 2026 · POLLACHI → MUNNAR (~90 km)</div>
+            <div class="day-header-title">DAY 2 — RIDE TO MUNNAR + HIDDEN MUNNAR</div>
+            <div class="day-header-date">FRIDAY · 03 JULY 2026 · POLLACHI → MUNNAR (~90 km) VIA MARAYOOR</div>
           </div>
           <div class="day-header-badge">GHAT DAY</div>
         </div>
@@ -547,16 +550,32 @@
             <div class="tl-note">Walk around Munnar town · local market · KSRTC stand area · no planned agenda</div>
           </div>
           <div class="tl-block rest">
-            <div class="tl-top"><div class="tl-block-time">12:00</div><div class="tl-block-name">Hotel Check-in &amp; Freshen Up</div><div class="tl-block-type">REST</div></div>
+            <div class="tl-top"><div class="tl-block-time">12:00</div><div class="tl-block-name">Check-in — Misty Mountain Resort, Chithirapuram</div><div class="tl-block-type">REST</div></div>
             <div class="tl-note">1.5 hrs to unpack, shower, rest</div>
           </div>
+          <div class="tl-block food">
+            <div class="tl-top"><div class="tl-block-time">13:00 – 14:00</div><div class="tl-block-name">Lunch — Hornbill Restaurant</div><div class="tl-block-type">FOOD</div></div>
+            <div class="tl-note">Memorable scenic-restaurant lunch · alternative: a highly rated local restaurant if timing works out better</div>
+          </div>
           <div class="tl-block activity">
-            <div class="tl-top"><div class="tl-block-time">13:30 – 18:00</div><div class="tl-block-name">Tea Estates, Viewpoints &amp; Waterfalls</div><div class="tl-block-type">ACTIVITY</div></div>
-            <div class="tl-note">Tata Tea Museum · Attukad Waterfalls (5 km from town) · scenic viewpoints · evening ride through tea gardens</div>
+            <div class="tl-top"><div class="tl-block-time">14:30 – 16:00</div><div class="tl-block-name">Attukad Waterfalls</div><div class="tl-block-type">ACTIVITY</div></div>
+            <div class="tl-note">Essential · one of the most scenic waterfalls around Munnar — the approach road itself is beautiful. ~30 min stop</div>
+          </div>
+          <div class="tl-block activity">
+            <div class="tl-top"><div class="tl-block-time">16:00 – 16:30</div><div class="tl-block-name">Periya Canal Waterfalls</div><div class="tl-block-type">ACTIVITY</div></div>
+            <div class="tl-note">Recommended · small, picturesque, quick stop with easy access</div>
           </div>
           <div class="tl-block food">
-            <div class="tl-top"><div class="tl-block-time">18:00+</div><div class="tl-block-name">Dinner, Games &amp; Conversations</div><div class="tl-block-type">FOOD</div></div>
-            <div class="tl-note">Early sleep for Day 3 — Kolukkumalai wake-up is 04:00</div>
+            <div class="tl-top"><div class="tl-block-time">16:45 – 17:30</div><div class="tl-block-name">Café Stop — Tea/Estate Café or Bakery</div><div class="tl-block-type">FOOD</div></div>
+            <div class="tl-note">Relaxed 30–45 min · cardamom or ginger tea + pazham pori · enjoy the cool weather, no rushing</div>
+          </div>
+          <div class="tl-block activity">
+            <div class="tl-top"><div class="tl-block-time">17:30 – 18:30</div><div class="tl-block-name">Munnar Town — Chocolate Factory &amp; Shopping</div><div class="tl-block-type">ACTIVITY</div></div>
+            <div class="tl-note">Homemade chocolates · fresh tea, cardamom, pepper, cinnamon, cloves · Tea Museum optional if time/weather allows</div>
+          </div>
+          <div class="tl-block food">
+            <div class="tl-top"><div class="tl-block-time">19:30+</div><div class="tl-block-name">Dinner at Resort, Games &amp; Conversations</div><div class="tl-block-type">FOOD</div></div>
+            <div class="tl-note">Early sleep — Day 3 is the big Highlands day, early start for Pothamedu sunrise</div>
           </div>
         </div>
 
@@ -564,42 +583,62 @@
         <div class="day-header day3">
           <div class="day-header-emoji">🌄</div>
           <div class="day-header-info">
-            <div class="day-header-title">DAY 3 — MAIN ADVENTURE</div>
-            <div class="day-header-date">SATURDAY · 04 JULY 2026 · KOLUKKUMALAI MISSION</div>
+            <div class="day-header-title">DAY 3 — CLASSIC MUNNAR HIGHLANDS</div>
+            <div class="day-header-date">SATURDAY · 04 JULY 2026 · MOUNTAINS · LAKES · TEA GARDENS · VIEWS</div>
           </div>
           <div class="day-header-badge">BIG DAY</div>
         </div>
         <div class="timeline">
           <div class="tl-line"></div>
-          <div class="tl-block rest">
-            <div class="tl-top"><div class="tl-block-time">04:00</div><div class="tl-block-name">Wake Up</div><div class="tl-block-type">REST</div></div>
-            <div class="tl-note">Prepare for Kolukkumalai · warm layers recommended · 2100m altitude — cold and windy</div>
-          </div>
-          <div class="tl-block trek">
-            <div class="tl-top"><div class="tl-block-time">05:00+</div><div class="tl-block-name">🌄 KOLUKKUMALAI SUNRISE MISSION</div><div class="tl-block-type">PRIORITY #1</div></div>
-            <div class="tl-note">Highest tea estate in the world · ~32 km from Munnar · jeep track for last stretch · sunrise from 2100m ASL · this is the dream destination — do not skip for any reason</div>
-          </div>
           <div class="tl-block activity">
-            <div class="tl-top"><div class="tl-block-time">Morning</div><div class="tl-block-name">Top Station</div><div class="tl-block-type">ACTIVITY</div></div>
-            <div class="tl-note">32 km from Munnar · Kerala-Tamil Nadu border viewpoint · panoramic valley views</div>
-          </div>
-          <div class="tl-block activity">
-            <div class="tl-top"><div class="tl-block-time">Late Morning</div><div class="tl-block-name">Mattupetty Dam</div><div class="tl-block-type">ACTIVITY</div></div>
-            <div class="tl-note">13 km from Munnar · scenic reservoir · boat rides optional · nice backdrop for photos</div>
-          </div>
-          <div class="tl-block activity">
-            <div class="tl-top"><div class="tl-block-time">Midday</div><div class="tl-block-name">Echo Point</div><div class="tl-block-type">ACTIVITY</div></div>
-            <div class="tl-note">15 km from Munnar · natural echo near Mattupetty lake</div>
-          </div>
-          <div class="tl-block activity">
-            <div class="tl-top"><div class="tl-block-time">Afternoon</div><div class="tl-block-name">Kundala Lake</div><div class="tl-block-type">ACTIVITY</div></div>
-            <div class="tl-note">Peaceful shikara rides · 20 km from Munnar · tranquil — perfect anniversary spot ❤️</div>
-          </div>
-          <div class="tl-block rest">
-            <div class="tl-top"><div class="tl-block-time">18:00</div><div class="tl-block-name">Return to Hotel</div><div class="tl-block-type">REST</div></div>
+            <div class="tl-top"><div class="tl-block-time">06:00 – 06:45</div><div class="tl-block-name">Pothamedu View Point — Sunrise</div><div class="tl-block-type">ACTIVITY</div></div>
+            <div class="tl-note">Essential · one of the finest viewpoints around Munnar, close to the resort · start the day here before breakfast</div>
           </div>
           <div class="tl-block food">
-            <div class="tl-top"><div class="tl-block-time">Evening</div><div class="tl-block-name">Dinner, Games &amp; Photo Review</div><div class="tl-block-type">FOOD</div></div>
+            <div class="tl-top"><div class="tl-block-time">07:00 – 08:00</div><div class="tl-block-name">Breakfast at Resort</div><div class="tl-block-type">FOOD</div></div>
+          </div>
+          <div class="tl-block activity">
+            <div class="tl-top"><div class="tl-block-time">08:30 – 09:30</div><div class="tl-block-name">Tea Garden Photo Stops</div><div class="tl-block-type">ACTIVITY</div></div>
+            <div class="tl-note">Essential · roadside tea estate stops along the way — tea gardens define the Munnar landscape</div>
+          </div>
+          <div class="tl-block activity">
+            <div class="tl-top"><div class="tl-block-time">09:30 – 10:15</div><div class="tl-block-name">Mattupetty Tea Factory</div><div class="tl-block-type">ACTIVITY</div></div>
+            <div class="tl-note">Recommended · see tea production, buy fresh tea · good indoor stop if weather turns</div>
+          </div>
+          <div class="tl-block activity">
+            <div class="tl-top"><div class="tl-block-time">10:15 – 11:15</div><div class="tl-block-name">Mattupetty Dam</div><div class="tl-block-type">ACTIVITY</div></div>
+            <div class="tl-note">Essential · reservoir views, optional boating, easy motorcycle parking</div>
+          </div>
+          <div class="tl-block activity">
+            <div class="tl-top"><div class="tl-block-time">11:15 – 11:45</div><div class="tl-block-name">Echo Point</div><div class="tl-block-type">ACTIVITY</div></div>
+            <div class="tl-note">Essential · short walk overlooking the lake, good photo stop</div>
+          </div>
+          <div class="tl-block activity">
+            <div class="tl-top"><div class="tl-block-time">12:00 – 12:45</div><div class="tl-block-name">Kundala Lake</div><div class="tl-block-type">ACTIVITY</div></div>
+            <div class="tl-note">Essential · among the most peaceful spots in Munnar · optional pedal boating · perfect anniversary spot ❤️</div>
+          </div>
+          <div class="tl-block food">
+            <div class="tl-top"><div class="tl-block-time">13:00 – 14:15</div><div class="tl-block-name">Lunch — Authentic Kerala Cuisine</div><div class="tl-block-type">FOOD</div></div>
+            <div class="tl-note">Kerala meals / appam &amp; stew / Kerala parotta with chicken roast / fish curry meals</div>
+          </div>
+          <div class="tl-block activity">
+            <div class="tl-top"><div class="tl-block-time">14:45 – 15:30</div><div class="tl-block-name">Pullu Medu Elephant View Point</div><div class="tl-block-type">ACTIVITY</div></div>
+            <div class="tl-note">Essential · underrated viewpoint, excellent valley views, minimal walking, very bike friendly</div>
+          </div>
+          <div class="tl-block activity">
+            <div class="tl-top"><div class="tl-block-time">15:45 – 16:45</div><div class="tl-block-name">Top Station</div><div class="tl-block-type">ACTIVITY</div></div>
+            <div class="tl-note">Essential · one of the highest, most spectacular viewpoints — panoramic Western Ghats views</div>
+          </div>
+          <div class="tl-block activity">
+            <div class="tl-top"><div class="tl-block-time">17:00 – 17:30</div><div class="tl-block-name">Nyayamkadu Waterfalls</div><div class="tl-block-type">ACTIVITY</div></div>
+            <div class="tl-note">Recommended · convenient roadside waterfall, minimal walking, especially beautiful in monsoon</div>
+          </div>
+          <div class="tl-block rest">
+            <div class="tl-top"><div class="tl-block-time">18:00</div><div class="tl-block-name">Return to Resort</div><div class="tl-block-type">REST</div></div>
+          </div>
+          <div class="tl-block food">
+            <div class="tl-top"><div class="tl-block-time">Evening</div><div class="tl-block-name">Special Dinner Out, Games &amp; Photo Review</div><div class="tl-block-type">FOOD</div></div>
+            <div class="tl-note">Dinner outside the resort tonight to experience another side of Munnar's food scene</div>
           </div>
         </div>
 
@@ -638,6 +677,174 @@
           </div>
         </div>
 
+      </div>
+    </div>
+
+    <!-- ═══ ATTRACTIONS ═══ -->
+    <div id="view-attractions" class="view">
+      <div class="pw">
+        <div class="sec-label" style="padding-top:20px">PLANNING PRINCIPLE</div>
+        <div style="background:rgba(68,255,136,0.04);border:1px solid rgba(68,255,136,0.15);border-radius:var(--r);padding:14px 16px;font-family:var(--fm);font-size:12px;color:var(--muted2);line-height:1.6;margin-bottom:8px;">
+          A place makes the cut only if it offers <span style="color:var(--text)">scenic value, nature, a unique experience, photography, or food</span> worth stopping for. No off-roading, no jeep safaris.
+        </div>
+
+        <div class="sec-label">ESSENTIAL</div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar low"></div><div class="risk-icon">🌄</div>
+            <div class="risk-info"><div class="risk-name">Pothamedu View Point</div><span class="risk-level-tag low">MUST</span></div></div>
+          <div class="risk-body"><div class="risk-when">Finest viewpoint near the resort · sunrise or sunset · photography</div></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar low"></div><div class="risk-icon">🍃</div>
+            <div class="risk-info"><div class="risk-name">Tea Garden Photo Stops</div><span class="risk-level-tag low">MUST</span></div></div>
+          <div class="risk-body"><div class="risk-when">Roadside estates along the route — the landscape that defines Munnar</div></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar low"></div><div class="risk-icon">🏞️</div>
+            <div class="risk-info"><div class="risk-name">Mattupetty Dam</div><span class="risk-level-tag low">MUST</span></div></div>
+          <div class="risk-body"><div class="risk-when">Reservoir views, boating, easy motorcycle parking</div></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar low"></div><div class="risk-icon">🔊</div>
+            <div class="risk-info"><div class="risk-name">Echo Point</div><span class="risk-level-tag low">MUST</span></div></div>
+          <div class="risk-body"><div class="risk-when">Short walk overlooking the lake, photography, relaxation</div></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar low"></div><div class="risk-icon">🛶</div>
+            <div class="risk-info"><div class="risk-name">Kundala Lake</div><span class="risk-level-tag low">MUST</span></div></div>
+          <div class="risk-body"><div class="risk-when">Among the most peaceful spots in Munnar · optional pedal boating</div></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar low"></div><div class="risk-icon">🐘</div>
+            <div class="risk-info"><div class="risk-name">Pullu Medu Elephant View Point</div><span class="risk-level-tag low">MUST</span></div></div>
+          <div class="risk-body"><div class="risk-when">Underrated valley views · minimal walking · very bike friendly</div></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar low"></div><div class="risk-icon">⛰️</div>
+            <div class="risk-info"><div class="risk-name">Top Station</div><span class="risk-level-tag low">MUST</span></div></div>
+          <div class="risk-body"><div class="risk-when">One of the highest, most spectacular viewpoints — panoramic Western Ghats views</div></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar low"></div><div class="risk-icon">💦</div>
+            <div class="risk-info"><div class="risk-name">Attukad Waterfalls</div><span class="risk-level-tag low">MUST</span></div></div>
+          <div class="risk-body"><div class="risk-when">One of the most scenic waterfalls around — the approach road itself is beautiful</div></div>
+        </div>
+
+        <div class="sec-label">RECOMMENDED</div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar medium"></div><div class="risk-icon">🏭</div>
+            <div class="risk-info"><div class="risk-name">Mattupetty Tea Factory</div><span class="risk-level-tag medium">GOOD INDOOR OPTION</span></div></div>
+          <div class="risk-body"><div class="risk-when">Understand tea production, buy fresh tea · useful if weather turns</div></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar medium"></div><div class="risk-icon">💦</div>
+            <div class="risk-info"><div class="risk-name">Nyayamkadu Waterfalls</div><span class="risk-level-tag medium">ROADSIDE</span></div></div>
+          <div class="risk-body"><div class="risk-when">Convenient, minimal walking, especially beautiful in monsoon</div></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar medium"></div><div class="risk-icon">💧</div>
+            <div class="risk-info"><div class="risk-name">Periya Canal Waterfalls</div><span class="risk-level-tag medium">QUICK STOP</span></div></div>
+          <div class="risk-body"><div class="risk-when">Small but picturesque, easy access</div></div>
+        </div>
+
+        <div class="sec-label">OPTIONAL — IF TIME PERMITS</div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar low"></div><div class="risk-icon">🍫</div>
+            <div class="risk-info"><div class="risk-name">Chocolate Factory</div></div></div>
+          <div class="risk-body"><div class="risk-when">Quick stop for homemade chocolates and gifts</div></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar low"></div><div class="risk-icon">🍵</div>
+            <div class="risk-info"><div class="risk-name">Tea Museum</div></div></div>
+          <div class="risk-body"><div class="risk-when">Worth it if interested in tea history and process</div></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar low"></div><div class="risk-icon">🌷</div>
+            <div class="risk-info"><div class="risk-name">Lakshmi Estate</div></div></div>
+          <div class="risk-body"><div class="risk-when">Beautiful tea estate — access depends on the day</div></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar low"></div><div class="risk-icon">🌸</div>
+            <div class="risk-info"><div class="risk-name">Forest Flower Garden</div></div></div>
+          <div class="risk-body"><div class="risk-when">Pleasant if flowers are in bloom, not essential</div></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar low"></div><div class="risk-icon">🌶️</div>
+            <div class="risk-info"><div class="risk-name">Spice Garden</div></div></div>
+          <div class="risk-body"><div class="risk-when">Interesting but not unique — only with spare time</div></div>
+        </div>
+
+        <div class="sec-label">SKIPPED — NOT ON THIS TRIP</div>
+        <div style="background:rgba(255,68,85,0.04);border:1px solid rgba(255,68,85,0.15);border-radius:var(--r);padding:14px 16px;font-family:var(--fm);font-size:12px;color:var(--muted2);line-height:1.9;">
+          Kolukkumalai (rough jeep track) · 33 Waterfalls · Dreamland Adventure Park · Elephant Ride · Blossom Park · Kanthalloor (dedicated trip material) · Kallar Waterfalls (only worthwhile via Kochi route)
+        </div>
+
+        <div class="sec-label">RIDE PACE GUIDE</div>
+        <div style="background:var(--s1);border:1px solid var(--b2);border-radius:var(--r);padding:14px 16px;font-family:var(--fm);font-size:12px;color:var(--muted2);line-height:2;">
+          Major attraction: <span style="color:var(--text)">45–60 min</span> · Viewpoint: <span style="color:var(--text)">20–30 min</span> · Waterfall: <span style="color:var(--text)">20–30 min</span> · Photo stop: <span style="color:var(--text)">10–15 min</span> · Tea break: <span style="color:var(--text)">20–30 min</span> · Lunch: <span style="color:var(--text)">60–90 min</span> · Café: <span style="color:var(--text)">30–45 min</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ FOOD & SHOPPING ═══ -->
+    <div id="view-food" class="view">
+      <div class="pw">
+        <div class="sec-label" style="padding-top:20px">DAILY FOOD RHYTHM</div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar low"></div><div class="risk-icon">🍳</div>
+            <div class="risk-info"><div class="risk-name">Breakfast</div></div></div>
+          <div class="risk-body"><div class="risk-when">At Misty Mountain Resort each morning — included, no need to rush out early</div></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar low"></div><div class="risk-icon">☕</div>
+            <div class="risk-info"><div class="risk-name">Morning Tea Stops</div></div></div>
+          <div class="risk-body"><div class="risk-when">Cardamom / ginger / lemon / black tea with pazham pori, parippu vada, uzhunnu vada, ela ada, unniyappam</div></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar low"></div><div class="risk-icon">🍽️</div>
+            <div class="risk-info"><div class="risk-name">Lunch</div></div></div>
+          <div class="risk-body"><div class="risk-when">Day 1 (arrival day): Hornbill Restaurant — memorable scenic lunch<br>Day 2 (highlands day): authentic Kerala cuisine — meals, appam &amp; stew, Kerala parotta with chicken roast, pepper chicken, fish curry, kappa with fish curry, prawn roast</div></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar low"></div><div class="risk-icon">🧋</div>
+            <div class="risk-info"><div class="risk-name">Evening Café</div></div></div>
+          <div class="risk-body"><div class="risk-when">Tea café, estate café, or local bakery — 30–45 min just enjoying the cool weather, no rushing back</div></div>
+        </div>
+        <div class="risk-card">
+          <div class="risk-card-header"><div class="risk-level-bar low"></div><div class="risk-icon">🌙</div>
+            <div class="risk-info"><div class="risk-name">Dinner</div></div></div>
+          <div class="risk-body"><div class="risk-when">Night 1: at the resort · Night 2: special meal outside to experience another side of Munnar's food scene</div></div>
+        </div>
+
+        <div class="sec-label">LOCAL SPECIALTIES TO TRY</div>
+        <div style="background:var(--s1);border:1px solid var(--b2);border-radius:var(--r);padding:16px 18px;font-family:var(--fm);font-size:12px;color:var(--muted2);line-height:1.9;">
+          <div style="color:var(--amber)">Drinks:</div> Cardamom Tea · Ginger Tea · Lemon Tea<br><br>
+          <div style="color:var(--amber)">Snacks:</div> Pazham Pori · Parippu Vada · Ela Ada · Achappam · Unniyappam<br><br>
+          <div style="color:var(--amber)">Main Course:</div> Kerala Meals · Appam &amp; Stew · Kerala Parotta · Chicken Roast · Fish Curry · Pepper Chicken<br><br>
+          <div style="color:var(--amber)">Desserts:</div> Homemade Chocolates · Carrot Halwa · Payasam (if available)
+        </div>
+
+        <div class="sec-label">SHOPPING LIST</div>
+        <div class="cl-category">
+          <div class="cl-item" style="cursor:default"><div class="cl-text">Fresh tea</div></div>
+          <div class="cl-item" style="cursor:default"><div class="cl-text">Cardamom</div></div>
+          <div class="cl-item" style="cursor:default"><div class="cl-text">Black Pepper</div></div>
+          <div class="cl-item" style="cursor:default"><div class="cl-text">Cinnamon</div></div>
+          <div class="cl-item" style="cursor:default"><div class="cl-text">Cloves</div></div>
+          <div class="cl-item" style="cursor:default"><div class="cl-text">Homemade chocolates</div></div>
+          <div class="cl-item" style="cursor:default"><div class="cl-text">Eucalyptus oil (from a reputed shop)</div></div>
+          <div class="cl-item" style="cursor:default"><div class="cl-text">Small local handicrafts</div></div>
+        </div>
+
+        <div class="sec-label">PHOTOGRAPHY PLAN</div>
+        <div style="background:rgba(68,255,136,0.04);border:1px solid rgba(68,255,136,0.15);border-radius:var(--r);padding:14px 16px;font-family:var(--fm);font-size:12px;color:var(--muted2);line-height:1.7;">
+          The best photographs are often away from crowded spots. Look for: tea plantations, quiet roadside bends, mist-covered mountain roads, small bridges, hidden valleys, lakeside viewpoints, scenic lay-bys, waterfalls. Document the journey, not just the destinations.
+        </div>
+
+        <div class="sec-label">WEATHER FLEXIBILITY</div>
+        <div style="background:var(--s1);border:1px solid var(--b2);border-radius:var(--r);padding:14px 16px;font-family:var(--fm);font-size:12px;color:var(--muted2);line-height:1.7;">
+          Munnar weather changes fast. If heavy rain hits, swap outdoor stops for indoor alternatives: Tea Factory, Tea Museum, Chocolate Factory, or a café stop. Keep the itinerary flexible, not rigid.
+        </div>
       </div>
     </div>
 
@@ -784,7 +991,7 @@
           </div>
           <div class="cl-item" onclick="toggleItem(this)" data-id="p3">
             <div class="cl-check"></div>
-            <div class="cl-text">Jackets — Munnar gets cold at night &amp; Kolukkumalai is 2100m</div>
+            <div class="cl-text">Jackets — Munnar gets cold at night &amp; at high-altitude viewpoints</div>
             <div class="cl-mandatory must">MUST</div>
           </div>
           <div class="cl-item" onclick="toggleItem(this)" data-id="p4">
@@ -882,11 +1089,11 @@
             </div>
           </div>
           <div class="risk-body">
-            <div class="risk-when">When: Kolukkumalai early morning (05:00) and high altitude roads</div>
+            <div class="risk-when">When: Early morning Pothamedu/Top Station visits and high altitude roads</div>
             <div class="risk-mitigation">
               <div class="risk-mit-item">Use low beam — not high beam in fog</div>
-              <div class="risk-mit-item">Wear warm layers — cold at 2100m even in July</div>
-              <div class="risk-mit-item">Stay behind local jeeps on narrow trails if possible</div>
+              <div class="risk-mit-item">Wear warm layers — cold at altitude even in July</div>
+              <div class="risk-mit-item">Slow down on narrow viewpoint approach roads</div>
             </div>
           </div>
         </div>
@@ -966,7 +1173,7 @@
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('view-' + id).classList.add('active');
-        const idx = ['overview','timeline','checklists','risks'].indexOf(id);
+        const idx = ['overview','timeline','attractions','food','checklists','risks'].indexOf(id);
         document.querySelectorAll('.tab-btn')[idx]?.classList.add('active');
       }
 
